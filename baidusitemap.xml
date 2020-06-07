@@ -337,28 +337,6 @@
 
     
   <url>
-    <loc>https://musoucrow.github.io/2017/06/16/mvc_thinking/</loc>
-    <lastmod>2020-05-10T14:06:52.491Z</lastmod>
-    <data>
-        <display>
-        <title>关于MVC框架的一点体悟</title>
-        <pubTime>2017-06-16T07:29:44.000Z</pubTime>
-        
-        <tag>ProgramDesign</tag>
-         
-        <tag>MVC</tag>
-         
-         
-           
-             
-              <breadCrumb title="ProgramDesign" url="https://musoucrow.github.io/categories/ProgramDesign/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://musoucrow.github.io/2017/05/01/png_stroke_problem/</loc>
     <lastmod>2020-05-10T14:06:52.491Z</lastmod>
     <data>
@@ -374,6 +352,28 @@
            
              
               <breadCrumb title="Teach" url="https://musoucrow.github.io/categories/Teach/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://musoucrow.github.io/2017/06/16/mvc_thinking/</loc>
+    <lastmod>2020-05-10T14:06:52.491Z</lastmod>
+    <data>
+        <display>
+        <title>关于MVC框架的一点体悟</title>
+        <pubTime>2017-06-16T07:29:44.000Z</pubTime>
+        
+        <tag>ProgramDesign</tag>
+         
+        <tag>MVC</tag>
+         
+         
+           
+             
+              <breadCrumb title="ProgramDesign" url="https://musoucrow.github.io/categories/ProgramDesign/"/>
           
         </display>
     </data>
@@ -489,28 +489,6 @@
 
     
   <url>
-    <loc>https://musoucrow.github.io/2018/10/29/dfq_ui/</loc>
-    <lastmod>2020-05-10T14:06:52.490Z</lastmod>
-    <data>
-        <display>
-        <title>《DFQ》开发随录——界面</title>
-        <pubTime>2018-10-29T13:02:54.000Z</pubTime>
-        
-        <tag>Development</tag>
-         
-        <tag>DFQ</tag>
-         
-         
-           
-             
-              <breadCrumb title="Development" url="https://musoucrow.github.io/categories/Development/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://musoucrow.github.io/2018/01/20/dnf_mobile_ex/</loc>
     <lastmod>2020-05-10T14:06:52.490Z</lastmod>
     <data>
@@ -528,6 +506,28 @@
            
              
               <breadCrumb title="Analysis" url="https://musoucrow.github.io/categories/Analysis/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://musoucrow.github.io/2018/10/29/dfq_ui/</loc>
+    <lastmod>2020-05-10T14:06:52.490Z</lastmod>
+    <data>
+        <display>
+        <title>《DFQ》开发随录——界面</title>
+        <pubTime>2018-10-29T13:02:54.000Z</pubTime>
+        
+        <tag>Development</tag>
+         
+        <tag>DFQ</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="https://musoucrow.github.io/categories/Development/"/>
           
         </display>
     </data>
@@ -711,12 +711,12 @@
 
     
   <url>
-    <loc>https://musoucrow.github.io/2019/10/17/dfq_end/</loc>
+    <loc>https://musoucrow.github.io/2019/04/30/dfq_hit/</loc>
     <lastmod>2020-05-10T14:06:52.489Z</lastmod>
     <data>
         <display>
-        <title>《DFQ》开发随录——后记</title>
-        <pubTime>2019-10-17T03:18:18.000Z</pubTime>
+        <title>《DFQ》开发随录——打击感</title>
+        <pubTime>2019-04-30T06:28:38.000Z</pubTime>
         
         <tag>Development</tag>
          
@@ -733,12 +733,12 @@
 
     
   <url>
-    <loc>https://musoucrow.github.io/2019/04/30/dfq_hit/</loc>
+    <loc>https://musoucrow.github.io/2019/10/17/dfq_end/</loc>
     <lastmod>2020-05-10T14:06:52.489Z</lastmod>
     <data>
         <display>
-        <title>《DFQ》开发随录——打击感</title>
-        <pubTime>2019-04-30T06:28:38.000Z</pubTime>
+        <title>《DFQ》开发随录——后记</title>
+        <pubTime>2019-10-17T03:18:18.000Z</pubTime>
         
         <tag>Development</tag>
          
@@ -829,28 +829,6 @@
 
     
   <url>
-    <loc>https://musoucrow.github.io/2017/03/29/brew_changing/</loc>
-    <lastmod>2020-05-10T14:06:52.488Z</lastmod>
-    <data>
-        <display>
-        <title>更换Homebrew的更新源</title>
-        <pubTime>2017-03-29T09:31:46.000Z</pubTime>
-        
-        <tag>Homebrew</tag>
-         
-        <tag>Git</tag>
-         
-         
-           
-             
-              <breadCrumb title="Teach" url="https://musoucrow.github.io/categories/Teach/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://musoucrow.github.io/2018/03/12/bnb_3/</loc>
     <lastmod>2020-05-10T14:06:52.488Z</lastmod>
     <data>
@@ -866,6 +844,28 @@
            
              
               <breadCrumb title="Development" url="https://musoucrow.github.io/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://musoucrow.github.io/2017/03/29/brew_changing/</loc>
+    <lastmod>2020-05-10T14:06:52.488Z</lastmod>
+    <data>
+        <display>
+        <title>更换Homebrew的更新源</title>
+        <pubTime>2017-03-29T09:31:46.000Z</pubTime>
+        
+        <tag>Homebrew</tag>
+         
+        <tag>Git</tag>
+         
+         
+           
+             
+              <breadCrumb title="Teach" url="https://musoucrow.github.io/categories/Teach/"/>
           
         </display>
     </data>
