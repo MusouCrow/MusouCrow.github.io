@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://musoucrow.github.io/"/>
-  <updated>2020-05-10T14:40:03.002Z</updated>
+  <updated>2020-06-07T13:26:14.384Z</updated>
   <id>https://musoucrow.github.io/</id>
   
   <author>
@@ -14,6 +14,41 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>3D瓦片地图采坑录</title>
+    <link href="https://musoucrow.github.io/2020/06/07/lbbn_tile/"/>
+    <id>https://musoucrow.github.io/2020/06/07/lbbn_tile/</id>
+    <published>2020-06-07T13:26:33.000Z</published>
+    <updated>2020-06-07T13:26:14.384Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>     </p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　由于Demo的场景风格主打像素风格（这里的像素风格指具备一定精度的风格，而非时下流行的马赛克），故决定使用瓦片(Tile)地图来实现。也就是这种东西：<br><img src="https://musoucrow.github.io/images/lbbn_tile/0.jpeg" alt="0"><br>　　游戏地图将由一个个规范化的单位图片拼接而成，是为<strong>瓦片</strong>。在早期的像素风格游戏可谓相当流行，因其构造成本低（无论从技术上还是美术上），而却能灵活拼接出各种各样的地图。于是我们也打算如此，但是在3D游戏下搞瓦片地图确是罕见得很。于是便开始了采坑之旅，遂成本文。</p>
+<h2 id="Sprytile"><a href="#Sprytile" class="headerlink" title="Sprytile"></a>Sprytile</h2><p>　　首先我们想到了在3D游戏下最接近瓦片地图思想的方案：<a href="https://docs.unity3d.com/Manual/CreatingEnvironments.html" target="_blank" rel="external">Terrain</a>，一般3D大地图都用类似方案：对一张平面地图进行各种揉捏形成地形，并在此之上涂抹各种图素。但可惜对于瓦片地图而言未免杀鸡用牛刀了，且在各方面都不能做到最适化，遂不考虑。<br>　　其次便是Unity官方自带的<a href="https://docs.unity3d.com/Manual/class-Tilemap.html" target="_blank" rel="external">2D Tilemap Editor</a>，对瓦片方面的需求倒是满足了，可惜3D瓦片并不只是在一张平面上进行，而通过多张平面旋转组成场景未免勉强，遂放弃。<br>　　既然在Unity这边行不通，那么便考虑生产端的Blender有什么合适的插件了。果不其然找到了<a href="https://chemikhazi.itch.io/sprytile" target="_blank" rel="external">Sprytile</a>，一看就明白，就是它了：<br><img src="https://musoucrow.github.io/images/lbbn_tile/1.png" alt="1"><br>　　使用准备好的tile图集，划分格子，在Blender以格子为单位进行填涂，每个格子将会是一个面，支持XYZ三个平面进行，在填涂完成后可作为正常模型进行各种操作。一切看起来是那么的美好，然后一路到了游戏后……</p>
+<h2 id="过滤之殇"><a href="#过滤之殇" class="headerlink" title="过滤之殇"></a>过滤之殇</h2><p>　　以<a href="http://musoucrow.github.io/2020/05/10/lbbn_shading/">前篇</a>的截图便可看出问题所在：<br><img src="https://musoucrow.github.io/images/lbbn_tile/2.png" alt="2"><br>　　可以看到地板之间存在奇怪的黑线：<br><img src="https://musoucrow.github.io/images/lbbn_tile/3.png" alt="3"><br>　　根据插件文档提供的<a href="https://docs.sprytile.xyz/unity-settings/" target="_blank" rel="external">Unity导出说明</a>来看，必须要将地图贴图的过滤模式设置为<code>Point</code>，即邻近过滤：<br><img src="https://musoucrow.github.io/images/lbbn_tile/4.png" alt="4"><br>　　嗯，黑线果然消失了。那么问题便出在图片的过滤模式了，回去复习了下<a href="https://learnopengl-cn.github.io/01%20Getting%20started/06%20Textures/#_3" target="_blank" rel="external">纹理过滤</a>，答案昭然若揭：<br><img src="https://musoucrow.github.io/images/lbbn_tile/5.png" alt="5"><br>　　由于瓦片地图的习惯会将相关图素集成一块，形成连续的图块：<br><img src="https://musoucrow.github.io/images/lbbn_tile/6.png" alt="6"><br>　　那么在线性过滤下，图块的边缘像素在采样的时候将会<strong>混进相邻图块的颜色</strong>，于是那些奇怪的黑线便是这么来的。<br>　　也许读者会认为：不用线性过滤不就得了，毕竟插件作者也是这么认为的。可惜我们做的风格并不适合用邻近过滤，那将显得与人物画风差异过大且马赛克：<br><img src="https://musoucrow.github.io/images/lbbn_tile/7.png" alt="7"><br>　　细心观察上图底部，这是开启抗锯齿（MSAA）导致的。查阅资料后发现这是MSAA的特点导致，如此哪怕我们想靠邻近过滤解决也是没门……当然也考虑过更换为其他抗锯齿的方式，但是效果都不甚喜人，于是开始寻觅解决之道。</p>
+<h2 id="无奈的解法"><a href="#无奈的解法" class="headerlink" title="无奈的解法"></a>无奈的解法</h2><p>　　首先考虑对tile图片进行下手：既然边缘会采样到相邻图块的像素，那么将它们隔开不就得了，如此：<br><img src="https://musoucrow.github.io/images/lbbn_tile/8.png" alt="8"><br>　　当然这么做的话要让Sprytile有所支持才行，好在它是<a href="https://github.com/ChemiKhazi/Sprytile" target="_blank" rel="external">开源</a>的。Blender的插件改起来也还算容易，毕竟会在界面提示标识好功能函数名。结果还是翻车了：<br><img src="https://musoucrow.github.io/images/lbbn_tile/9.jpg" alt="9"><br>　　瓦片之间出现了奇怪的透明点，仔细一想便明白了：<strong>透明像素一样会被采样到</strong>，所以会影响到透明度。于是迅速想到下个方案：让每个图块外扩边缘1像素，这样边缘的采样只会<strong>采样到相同颜色</strong>的像素：<br><img src="https://musoucrow.github.io/images/lbbn_tile/10.png" alt="10"><br>　　很不错，黑线什么的都消失了，哪怕是开着MSAA。同时美术也在Blender琢磨出了一种方法：在不做任何处理的贴图的基础上，将瓦片地图模型的UV全部缩小一点（参考值：0.96），如此便不会直接采样到边缘像素，从而以牺牲了一点点边缘效果解决了问题。<br>　　两者的效果最终是差不多的，但都是不完美的，在编辑器里便一目了然：<br><img src="https://musoucrow.github.io/images/lbbn_tile/11.png" alt="11"><br>　　可以看得出，格子之间的边界可谓泾渭分明，这是因为每个格子都是独立的mesh，它们并不是作为一个整体去渲染，也就不存在视为一个整体去采样。也就无法达到真正意义上2D游戏里要达到的效果（格子之间彻底融为一体）。要这么做有两种方式：第一种是根据瓦片地图的填涂情况最终生成大贴图与新模型，但这种方式相当不优化，并且会急剧增大包体。其次是仿照以前的2D游戏做法：游戏本身使用邻近过滤渲染，最后将渲染成图进行拉伸放大（放大方式采用线性过滤），但这是牺牲画面分辨率带来的。<br>　　经过以上总结可以看出，基本不存在非常完美的解决方案，只能矮子里拔大个了：UV缩小的方案从工序上最为简单，且显示效果也能接受（没对比过原版基本看不出太多异样）。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　一开始我们觉得这种瓦片地图1个格子就占2个三角形，面数会不会太高了。结果在参考其他游戏的情况时发现《闪之轨迹3》的一组垃圾桶的面数……<br><img src="https://musoucrow.github.io/images/lbbn_tile/12.jpg" alt="12"><br>　　嗯，一组垃圾桶的面数都完爆我整个瓦片地图模型了，法老控牛逼！<br>　　顺带一提的是，刚才提到的格子边界问题在Unity官方的2D Tilemap Editor也是存在的，只能说是瓦片地图的局限性了，好在离得远也看不太出。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　&lt;strong&gt;欢迎参与讨论，转载请注明出处。&lt;/strong&gt;     &lt;/p&gt;
+&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;　　由于Demo的场景风格主打像素风格（这里的
+    
+    </summary>
+    
+      <category term="Teach" scheme="https://musoucrow.github.io/categories/Teach/"/>
+    
+    
+      <category term="Unity" scheme="https://musoucrow.github.io/tags/Unity/"/>
+    
+      <category term="Graphics" scheme="https://musoucrow.github.io/tags/Graphics/"/>
+    
+      <category term="Blender" scheme="https://musoucrow.github.io/tags/Blender/"/>
+    
+      <category term="Tile" scheme="https://musoucrow.github.io/tags/Tile/"/>
+    
+  </entry>
   
   <entry>
     <title>Demo的卡通渲染方案</title>
@@ -857,73 +892,6 @@
       <category term="Development" scheme="https://musoucrow.github.io/tags/Development/"/>
     
       <category term="DFQ" scheme="https://musoucrow.github.io/tags/DFQ/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Lua的local变量探究</title>
-    <link href="https://musoucrow.github.io/2018/04/17/lua_local/"/>
-    <id>https://musoucrow.github.io/2018/04/17/lua_local/</id>
-    <published>2018-04-17T06:20:33.000Z</published>
-    <updated>2020-05-10T14:06:52.491Z</updated>
-    
-    <content type="html"><![CDATA[<p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　先前看到<a href="https://blog.uwa4d.com/archives/usparkle_luajit.html" target="_blank" rel="external">用好Lua+Unity，让性能飞起来—LuaJIT性能坑详解</a>一文中提到：</p>
-<pre><code>3.2 寄存器分配失败-&gt;减少local变量、避免过深的调用层次
-很不幸的一点是，arm中可用的寄存器比x86少。LuaJIT为了速度，会尽可能用寄存器存储local变量，但是如果local变量太多，寄存器不够用，目前JIT的做法是：放弃治疗（有兴趣可以看看源码中asm_head_side函数的注释）。因此，我们能做的，只有按照官方优化指引说的，避免过多的local变量，或者通过do end来限制local变量的生命周期。
-</code></pre><p>　　对此自然是可以理解的，哪怕是一般语言，local变量过多也会有堆栈溢出的问题。不过我对此一直有个隐忧：<strong>Lua是拥有模块级local变量的，不知是否也受此规则影响？</strong>尽管有此隐忧，却一直没有去做相关的探究。恰逢今日遇到相关话题，便来个刨根问底吧。</p>
-<h2 id="200限制"><a href="#200限制" class="headerlink" title="200限制"></a>200限制</h2><p>　　首先的发现是：一段过程下最多拥有200个local变量，且<code>do end</code>不算。类似这样：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">local</span> Class = &#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">local</span> test1 = <span class="number">1</span></div><div class="line"><span class="keyword">local</span> test2 = <span class="number">2</span></div><div class="line">... <span class="comment">--to 199</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> Class</div></pre></td></tr></table></figure>
-<p>　　如果超过199，则会报出<code>main function has more than 200 local variables</code>的错误。当然这里说的是一段过程，所以函数是另算的，同样一个函数的过程最多也不能超过200个local变量（调用函数则算转入下一个过程了）。<br>　　这个限制是Lua与LuaJIT共有的，显然是想限制local数量的泛滥。</p>
-<h2 id="函数嵌套调用"><a href="#函数嵌套调用" class="headerlink" title="函数嵌套调用"></a>函数嵌套调用</h2><p>　　接下来便是试试函数嵌套调用了：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Class.Do</span><span class="params">(v)</span></span></div><div class="line">    <span class="keyword">if</span> (v &gt; n) <span class="keyword">then</span> <span class="comment">--n is a custom value</span></div><div class="line">        <span class="keyword">return</span></div><div class="line">    <span class="keyword">end</span></div><div class="line"></div><div class="line">    <span class="keyword">local</span> test1 = <span class="number">1</span></div><div class="line">    ... <span class="comment">-- to 199</span></div><div class="line"></div><div class="line">    Class.Do(v + <span class="number">1</span>)</div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
-<p>　　注意参数v也算是local变量的一员，所以test变量最多只能延伸到199个。以此进行递归调用的话，根据实验结果来看：</p>
-<table>
-<thead>
-<tr>
-<th>版本</th>
-<th>嵌套上限</th>
-<th>local变量上限</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>LuaJIT</td>
-<td>325</td>
-<td>65000</td>
-</tr>
-<tr>
-<td>Lua5.3</td>
-<td>4975</td>
-<td>995000</td>
-</tr>
-</tbody>
-</table>
-<p>　　测试的环境为macOS x86-64，LuaJIT方面无论JIT开启与否结果皆一致。根据前文所言来看，到了ARM环境这个数量将会进一步下降。虽然从对比来看差距有点大，但实际上在函数调用方面也算够用了。</p>
-<h2 id="模块级local变量"><a href="#模块级local变量" class="headerlink" title="模块级local变量"></a>模块级local变量</h2><p>　　接下来便是我最关心的一点了：以上local变量上限是否会影响到模块级local变量？所谓模块级local变量即作用域为整个文件：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--test.lua</span></div><div class="line"><span class="keyword">local</span> Class = &#123;&#125;</div><div class="line"><span class="keyword">local</span> <span class="function"><span class="keyword">function</span> <span class="title">Func</span><span class="params">()</span></span></div><div class="line"><span class="keyword">end</span></div><div class="line">...</div><div class="line"></div><div class="line"><span class="keyword">return</span> Class</div></pre></td></tr></table></figure>
-<p>　　这种模块级local变量在Lua开发的应用还是很广泛的，它能有效的做到信息分隔的效果。但若是这些变量也受之前的上限规则影响，咁就扑街了！</p>
-<p>　　首先是测试加载多个满载local变量的模块：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> n=<span class="number">1</span>, <span class="number">5000</span> <span class="keyword">do</span></div><div class="line">    <span class="built_in">require</span>(<span class="string">"test"</span> .. n)</div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
-<p>　　天可怜见，无论读取多少个文件，都不会存在上限问题。可见对于模块级local变量的处理是不一样的。到了这里基本上可以放心了，不过为防万一，我还做了模块的嵌套引用实验：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">---test1.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> Class = &#123;&#125;</div><div class="line"><span class="built_in">print</span>(<span class="string">"1"</span>)</div><div class="line"><span class="keyword">local</span> Next = <span class="built_in">require</span>(<span class="string">"test2"</span>)</div><div class="line"><span class="keyword">local</span> test1 = <span class="number">1</span></div><div class="line"><span class="keyword">local</span> test2 = <span class="number">2</span></div><div class="line">... <span class="comment">--to max</span></div><div class="line"><span class="keyword">return</span> Class</div></pre></td></tr></table></figure>
-<p>　　以这种形式生成了5000个文件，以此进行嵌套引用，结果也是成功通过了。由此可见，对于模块级local变量是可以放心地去使用了。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　尽管模块级local变量是可以随便用了，但是也要考虑到热更新方面的问题：若是选择使用模块级local变量去存储模块的数据，那么在热更新方面的处理将会变得十分麻烦。从这点考虑的话，模块级local变量最好只是用于引用别的模块为妙。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;　　&lt;strong&gt;欢迎参与讨论，转载请注明出处。&lt;/strong&gt;      &lt;/p&gt;
-&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;　　先前看到&lt;a href=&quot;https:/
-    
-    </summary>
-    
-      <category term="ProgramDesign" scheme="https://musoucrow.github.io/categories/ProgramDesign/"/>
-    
-    
-      <category term="ProgramDesign" scheme="https://musoucrow.github.io/tags/ProgramDesign/"/>
-    
-      <category term="Lua" scheme="https://musoucrow.github.io/tags/Lua/"/>
     
   </entry>
   
