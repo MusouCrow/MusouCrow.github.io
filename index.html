@@ -291,6 +291,187 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2020/08/02/lbbn_baked/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2020/08/02/lbbn_baked/" itemprop="url">
+                  在Demo实装光照烘焙与探针
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-02T21:04:33+08:00">
+                2020-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Teach/" itemprop="url" rel="index">
+                    <span itemprop="name">Teach</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/08/02/lbbn_baked/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/08/02/lbbn_baked/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/08/02/lbbn_baked/" class="leancloud_visitors" data-flag-title="在Demo实装光照烘焙与探针">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>     </p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　Demo目前的实时光影虽已完成，但考虑到不同的配置设备，还是得做出不同档次的光影方案。那么烘焙光照（<a href="https://docs.unity3d.com/Manual/Lightmappers.html" target="_blank" rel="external">Lightmapping</a>）与光照探针（<a href="https://docs.unity3d.com/Manual/LightProbes.html" target="_blank" rel="external">Light Probes</a>）就免不了了。本文将结合项目实际需求，讲述遇到的问题及解决方案。项目引擎版本为2019.4，渲染管线为URP。</p>
+<h2 id="初步的烘焙"><a href="#初步的烘焙" class="headerlink" title="初步的烘焙"></a>初步的烘焙</h2><p>　　首先要做的自然是对Shader增加光照烘焙与探针的支持，照抄URP的SimpleLit Shader即可。大致要点如下：</p>
+<ul>
+<li>Shader添加multi_compile：<code>LIGHTMAP_ON</code>与<code>_MIXED_LIGHTING_SUBTRACTIVE</code>，这表示Shader会参与光照贴图与混合光照</li>
+<li>顶点着色器参数添加<code>half2 lightmapUV : TEXCOORD1;</code>，这是光照贴图的UV</li>
+<li>片元着色器参数添加<code>DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 1);</code>，这是URP自带的宏，根据LIGHTMAP_ON决定配置光照烘焙或探针的参数（lightmapUV or vertexSH），最后的参数<code>1</code>决定是第几个TEXCOORD</li>
+<li>在顶点着色器调用<code>OUTPUT_LIGHTMAP_UV(lightmapUV, lightmapScaleOffset, OUT)</code>与<code>OUTPUT_SH(normalWS, OUT)</code>宏，它们将根据情况配置lightmapUV与vertexSH</li>
+<li>在片元着色器对光照贴图或探针进行取色（<code>SAMPLE_GI(lmName, shName, normalWSName)</code>），最后将之加入到着色环节即可</li>
+<li>若是想要烘焙模式下也能接受实时阴影，记得调用<code>MixRealtimeAndBakedGI</code>函数</li>
+</ul>
+<p>　　总的来说都封装好了，照着拼凑而已。那么事不宜迟，直接按照默认的烘焙配置整个看看，记得要将GameObject的Static里的<code>Contribute GI</code>勾选方可参与烘焙：<br><img src="https://musoucrow.github.io/images/lbbn_baked/0.png" alt="0"><br>　　看着似乎还不错，那么对比下原生看看吧：<br><img src="https://musoucrow.github.io/images/lbbn_baked/1.png" alt="1"><br>　　这么一看还是有不少差距的，必须要让烘焙与实时的效果高度接近才行呐——</p>
+<h2 id="ShadowMask"><a href="#ShadowMask" class="headerlink" title="ShadowMask"></a>ShadowMask</h2><p>　　经过与烘焙设置一番斗智斗勇后，我发现我要的仅仅是让<strong>阴影烘焙</strong>，以节省阴影的运算罢了。什么全局光照、烘焙自带的着色等等都是不需要的。为此我尝试过不少骚操作：生成光照贴图后进行二值化处理、直接在Shader对烘焙色进行处理等……可惜这些方案都只是治标不治本，要么在流程上繁琐，要么性能不佳，要么无法应对所有情况。最终我把目光放在了烘焙三模式之一的<strong>ShadowMask</strong>，它将单独生成阴影贴图，那么若是我只用它，抛弃光照贴图，便可达到目的了。<br>　　不幸的是，URP并没有支持ShadowMask，官网显示仍处于In research状态。幸好网上有其他人做了<a href="https://catlikecoding.com/unity/tutorials/custom-srp/shadow-masks/" target="_blank" rel="external">实现ShadowMask的教程</a>，顺便也学习了一波可编程渲染管线（SRP）的基础知识。经过研究发现，ShadowMask的添加并不复杂，甚至可以说是URP主动将之关闭了（<em>严重怀疑是故意拖到后面做，显得有活干</em>）。当然这么干了之后就表示需要维护自己的URP版本了，顺便将之<a href="https://github.com/MusouCrow/MyURP" target="_blank" rel="external">开源</a>了。<br>　　SRP本质上是开放了一个可供用户定制的表层，多数核心功能还是封装好的。ShadowMask也不例外，其生成附属于烘焙模块。我们要做的只是添加一些设置，以及相应的Shader支持罢了：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 添加Shadowmask字段以让界面开启选项</span></div><div class="line">mixedLightingModes = SupportedRenderingFeatures.LightmapMixedBakeModes.Subtractive | SupportedRenderingFeatures.LightmapMixedBakeModes.IndirectOnly | SupportedRenderingFeatures.LightmapMixedBakeModes.Shadowmask</div><div class="line"></div><div class="line"><span class="comment">// 添加Shader关键字，以决定是否启用功能</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="keyword">string</span> MixedLightingShadowmask = <span class="string">"SHADOWS_SHADOWMASK"</span>;</div><div class="line"></div><div class="line"><span class="comment">// 根据条件设置相应的Shader关键字</span></div><div class="line">CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.MixedLightingShadowmask, renderingData.lightData.supportsMixedLighting &amp;&amp;m_MixedLightingSetup == MixedLightingSetup.ShadowMask);</div></pre></td></tr></table></figure>
+<p>　　Shader方面要做的调整也不多，URP本身自带ShadowMask的贴图变量<code>TEXTURE2D(unity_ShadowMask);</code>，其UV与光照贴图一致，复用即可。记得在Shader添加multi_compile <code>SHADOWS_SHADOWMASK</code>以判别是否处于ShadowMask模式下。  </p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(SHADOWS_SHADOWMASK) &amp;&amp; defined(LIGHTMAP_ON)</span></div><div class="line">    <span class="comment">// ShadowMask贴图只有R通道</span></div><div class="line">    half shadowMask = SAMPLE_TEXTURE2D(unity_ShadowMask, samplerunity_ShadowMask, lightmapUV).r;</div><div class="line"></div><div class="line">    <span class="comment">// 不超过光照Strength值</span></div><div class="line">    shadowMask = LerpWhiteTo(shadowMask, GetMainLightShadowStrength());</div><div class="line"></div><div class="line">    <span class="comment">// 加入到阴影着色中</span></div><div class="line">    light.shadowAttenuation = min(light.shadowAttenuation, shadowMask);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure>
+<p>　　大致要做的事情就这么多，烘焙设置除阴影方面外，能怎么快就怎么设置（反正也用不上光照贴图了），一般来说需要注意的有<code>Bounces</code>要设为1，不然阴影会不完整。<code>Flitering</code>将对阴影贴图做边缘柔和处理，<code>Lightmap Resolution</code>与<code>Lightmap Size</code>决定阴影质量，参考如下：<br><img src="https://musoucrow.github.io/images/lbbn_baked/2.png" alt="2"><br>　　另外需要注意的是，阴影精度很大程度上取决于模型的大小，因为<strong>一个模型只能有一张光照/阴影贴图</strong>，在贴图大小定死上限的前提下，模型越大贴图的解析度自然越低。那么来看看效果吧，<strong>图一为实时，图二为烘焙</strong>：<br><img src="https://musoucrow.github.io/images/lbbn_baked/3.jpg" alt="3"><br><img src="https://musoucrow.github.io/images/lbbn_baked/4.jpg" alt="4"><br>　　效果可以说是高度接近了，干掉了光照贴图后着色变得完全一致，阴影贴图在合理的设置下也达到了高度接近实时的效果。坡肥！</p>
+<h2 id="光照探针"><a href="#光照探针" class="headerlink" title="光照探针"></a>光照探针</h2><p>　　现在虽然实现了高度接近实时的阴影烘焙，但显而易见，当人物走向阴影处便会是这样的结果：<br><img src="https://musoucrow.github.io/images/lbbn_baked/5.png" alt="5"><br>　　在某些游戏也许不太理会这种现象，但这也太捞了，光照探针便是为了解决这个问题而生的。通过在场景布置探针，将会根据动态对象附近的探针取色决定明暗度：<br><img src="https://musoucrow.github.io/images/lbbn_baked/6.gif" alt="6"><br>　　光照探针如果要手动布置那实在是太麻烦了，于是我使用了这个<a href="https://github.com/laurenth-personal/LightingTools.LightProbesVolumes" target="_blank" rel="external">插件</a>，通过简单的设置暴力的去平铺一波：<br><img src="https://musoucrow.github.io/images/lbbn_baked/12.png" alt="12"><br>　　根据官方文档说法，探针数量与性能成反比。但此插件平铺并不会把探针置于模型内部，以及对比了下《使命召唤手游》的光照探针，感觉还行：<br><img src="https://musoucrow.github.io/images/lbbn_baked/13.jpg" alt="13"><br>　　Shader方面没什么要改的，在URP获取光照函数<code>GetMainLight()</code>本身自带了对光照探针的着色处理（附加在<code>light.distanceAttenuation</code>中），由于不需要用到全局光照，之前的<code>OUTPUT_SH</code>之类的都可以删了。当然有个现象需要注意下：<br><img src="https://musoucrow.github.io/images/lbbn_baked/7.gif" alt="7"><br>　　可以看到在暗处时实在是太黑了（也许是放弃了全局光照导致），于是我们加个约束，将暗值约束在光照Strength到1：  </p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">if</span> !defined(LIGHTMAP_ON) &amp;&amp; defined(_MIXED_LIGHTING_SUBTRACTIVE)</span></div><div class="line">    mainLight.distanceAttenuation = lerp(GetMainLightShadowStrength(), <span class="number">1</span>, saturate(mainLight.distanceAttenuation));</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure>
+<p><img src="https://musoucrow.github.io/images/lbbn_baked/8.gif" alt="8"><br>　　很好，这下可以说是大功告成了！</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　最后演示下不同光影品质下的差别吧，分别为低、中、高：<br><img src="https://musoucrow.github.io/images/lbbn_baked/9.gif" alt="9"><br><img src="https://musoucrow.github.io/images/lbbn_baked/10.gif" alt="10"><br><img src="https://musoucrow.github.io/images/lbbn_baked/11.gif" alt="11"><br>　　话虽如此，可我发现目前直接把高品质光影扔到iPhone8下居然稳定59帧，太强了……<br><img src="https://musoucrow.github.io/images/lbbn_baked/14.png" alt="14"></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2020/07/05/urp_outline/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1883,184 +2064,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2019/05/31/dfq_ai/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Musoucrow">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Musoucrow' BLOG">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2019/05/31/dfq_ai/" itemprop="url">
-                  《DFQ》开发随录——AI
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-31T21:09:18+08:00">
-                2019-05-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Development/" itemprop="url" rel="index">
-                    <span itemprop="name">Development</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/31/dfq_ai/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/05/31/dfq_ai/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/05/31/dfq_ai/" class="leancloud_visitors" data-flag-title="《DFQ》开发随录——AI">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors </span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　DFQ是PVE（Player VS Environment）游戏，那么自然要有AI了。DFQ的AI实现并不算复杂，并没有用到时下流行的<a href="https://en.wikipedia.org/wiki/Behavior_tree" target="_blank" rel="external">行为树（Behavior Tree）</a>。原因在于不需要做到太精细的操作，且AI部分的业务不需要执行策划参与（不需要编辑器化）。本文将一一叙述其中要点，相信对于同类型的游戏也有一定的参考价值。</p>
-<h2 id="宗旨"><a href="#宗旨" class="headerlink" title="宗旨"></a>宗旨</h2><p>　　AI设计的宗旨只有一个：<strong>根据游戏的各种情况，决定进行怎样的操作</strong>。这样的思路其实挺仿生的，我们玩游戏的时候本质上也是如此。要注意的是，玩家进行操作的方式是通过外设（键盘鼠标手柄触控等）输入操作信息（按键坐标等）。从这点来说，AI也可以这么做，以<strong>进行虚拟的输入操作</strong>。这么做的好处是很明显的，如此AI与玩家在功能上达到了一致，AI也不需要与某个具体的功能耦合，只需要关注相应的操作指令，<strong>无需关注具体的功能实现</strong>。<br>　　而这一切只需要做一套操作模块即可，并且做联机时来自其他玩家的输入亦可如此处理，通过这种方式达到了玩家、AI、联机三者的有机统一。可谓「软件开发中遇到的所有问题，都可以通过增加一层抽象而得以解决」的一次实践。<br>　　当然这也会引入新的问题：<em>某些功能只想AI拥有，那该怎么办？</em>DFQ中的非转向移动便属于这类，解决方法很简单：设计一个<strong>玩家无法触发的操作指令</strong>即可。</p>
-<h2 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h2><p>　　AI的实体存在就是个类对象（下文称AI对象）而已，它会被外部调用的基础函数只有两个：Update和Tick。Update用于处理持续性的业务，而Tick则是一次性的业务，当然两者可能会有所结合（Tick接收参数，以驱动Update的运作）。<br>　　AI对象主要会存在的场合有：常驻（移动和攻击）、技能（判断是否应发动）、状态（某些状态下需要后续的操作），通过配置化的方式，即可灵活的组合需要的AI了：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">return</span> &#123;</div><div class="line">    script = <span class="string">"base"</span>,</div><div class="line">    state = <span class="string">"attack"</span>,</div><div class="line">    ai = &#123;</div><div class="line">        script = <span class="string">"battleJudge"</span>,</div><div class="line">        collider = <span class="string">"duelist/goblin/skin/3-attack"</span></div><div class="line">    &#125;,</div><div class="line">    attackValues = &#123;</div><div class="line">        &#123;</div><div class="line">            damageRate = <span class="number">1</span>,</div><div class="line">            isPhysical = <span class="keyword">true</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>　　如上配置所示，这是个技能的配置。在AI部分选择了<code>battleJudge</code>类，并提供了用于判断范围的collider参数。如此便定下了该技能的AI方针：使用collider判断是否存在敌人，存在则按下技能对应的按键，以发动技能。</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>　　说完基本构成后，再来说说一些具体AI业务的实现吧。</p>
-<ul>
-<li>移动：移动AI的核心构成有三<ul>
-<li>获取目标：遍历符合条件的对象，涉及到阵营等因素。</li>
-<li>寻路：以目标为终点展开的寻路，由于DFQ使用的是网格地图，所以使用A星之类的寻路算法即可。</li>
-<li>输入操作：获取到移动路径后，通过发出输入指令以驱动角色以之移动。要注意的是，这种方式不可能做到完全贴合路径，所以出现了超过了路径点的情况也不会作处理。</li>
-</ul>
-</li>
-<li>攻击：攻击AI要做的事情很单纯，遍历技能以Tick它们的AI对象进行发动而已。要注意的是，技能的使用顺序要建立优先级进行排序。</li>
-<li>判定：这个判定，便是上文的battleJudge了，通过collider以判断目标是否存在。这里的collider便是先前<a href="https://musoucrow.github.io/2019/04/30/dfq_hit/">打击感</a>所言的立体矩形，如下图所示：<br><img src="https://musoucrow.github.io/images/dfq_ai/collider.png" alt="collider"></li>
-</ul>
-<p>　　以上便是DFQ里值得一提的AI业务。顺带一提的是，AI是典型的不需要<strong>立即生效</strong>的业务，所以可以考虑每帧只执行一个单位的AI业务，以此减缓性能压力，并且避免敌人一窝蜂展开攻击的现象。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　在本文开篇时，输入AI二字的我其实有点恍惚。短短数年，AI几乎成了深度学习/机器学习的代名词了。在游戏领域一个理所当然的缩写反倒让我踌躇了一瞬，真是唏嘘啊。也许以后的游戏AI真的都成了基于强化学习的实现也说不定呢（笑。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2110,7 +2113,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
