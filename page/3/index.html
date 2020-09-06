@@ -291,6 +291,183 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/08/24/build_love_android/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/08/24/build_love_android/" itemprop="url">
+                  在macOS搭建LÖVE for Android平台
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-24T19:54:33+08:00">
+                2018-08-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Teach/" itemprop="url" rel="index">
+                    <span itemprop="name">Teach</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/08/24/build_love_android/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/08/24/build_love_android/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/08/24/build_love_android/" class="leancloud_visitors" data-flag-title="在macOS搭建LÖVE for Android平台">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　近日在搭建macOS下的<a href="https://bitbucket.org/MartinFelis/love-android-sdl2" target="_blank" rel="external">LÖVE for Android</a>遇到了不少问题，虽然有<a href="https://bitbucket.org/MartinFelis/love-android-sdl2/wiki/Home" target="_blank" rel="external">官方Wiki</a>的帮助，但却发现了不少实操中才会遇到的问题，特此记录，以便后人。</p>
+<h2 id="JDK"><a href="#JDK" class="headerlink" title="JDK"></a>JDK</h2><p>　　由于安卓SDK只支持到了JDK8，所以只好装JDK8，新版将无法打开安卓SDK。可选择前往<a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="external">官网</a>或者使用<a href="https://brew.sh" target="_blank" rel="external">Homebrew</a>下载。使用Homebrew如此输入便可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ brew tap caskroom/versions</div><div class="line">$ brew cask install java8</div></pre></td></tr></table></figure></p>
+<h2 id="SDK"><a href="#SDK" class="headerlink" title="SDK"></a>SDK</h2><p>　　由于谷歌的尿性，<a href="https://developer.android.com" target="_blank" rel="external">安卓SDK的官网</a>上已无合适的安卓SDK提供下载了，只剩下Android Studio和Android SDK命令行工具。此命令行工具实际上缺少了不少东西，所以也不推荐。本人推荐前往<a href="http://www.androiddevtools.cn" target="_blank" rel="external">AndroidDevTools</a>进行下载，认准SDK Tools项便是。<br>　　下载完成后便需要安装各种工具了，使用命令行运行SDK/tools目录下的android即可打开SDK安装界面，然后按照官方Wiki所言般安装相关工具即可。<img src="https://bitbucket.org/repo/A8Abzz/images/32734727-Screen%20Shot%202014-03-29%20at%200.19.30.png" alt="sdk"><br>　　值得一提的是Android Support Library，在谷歌官方源似乎已经找不到了，可以考虑换源或者直接下载<a href="https://dl-ssl.google.com/android/repository/support_r19.1.zip" target="_blank" rel="external">官方文件</a>，下载完成后置于SDK/extras目录下即可。  </p>
+<h2 id="NDK"><a href="#NDK" class="headerlink" title="NDK"></a>NDK</h2><p>　　这里官方Wiki便开始坑人了：<code>Once you have the SDK tools you can get the NDK version r9d from here (Download acording to your system).</code>事实上r9d会因为某个部件版本过低而对接失败，必须是小于15大于9的版本。去AndroidDevTools下载即可。</p>
+<h2 id="Ant"><a href="#Ant" class="headerlink" title="Ant"></a>Ant</h2><p>　　这个没什么坑点，照常下载即可。不过ant将会作为一个常用命令去使用，所以推荐在Homebrew进行安装：<code>$ brew install ant</code>即可。</p>
+<h2 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h2><p>　　把<a href="https://bitbucket.org/MartinFelis/love-android-sdl2/src/master/" target="_blank" rel="external">love-android-sdl2</a>下载后（当然我使用的是0.10.2版本，所以下载的是<a href="https://bitbucket.org/rude/love/downloads/love-0.10.2-android-source.tar.gz" target="_blank" rel="external">这个</a>），仍需要配置环境变量，参考官方Wiki即可。大致上是在<code>~/.bash_profile</code>文件添加SDK与NDK的路径：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">export ANDROID_HOME=/Developer/SDKs/android-sdk-macosx</div><div class="line">export ANDROID_NDK=/Developer/Tools/ndk</div></pre></td></tr></table></figure></p>
+<p>　　然后是在<code>/etc/paths.d/android-sdk</code>文件添加SDK的tools与platform-tools以及ant的bin目录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">/Developer/SDKs/android-sdk-macosx/tools</div><div class="line">/Developer/SDKs/android-sdk-macosx/platform-tools</div><div class="line">/Developer/Tools/ant/bin</div></pre></td></tr></table></figure></p>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><p>　　环境变量部署完毕后，便可以开始编译LÖVE for Android工程了（ndk-build是NDK文件夹下的一个工具）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cd ~/repos/love-android-sdl2</div><div class="line">$ ndk-build</div></pre></td></tr></table></figure></p>
+<p>　　若是一切平安无事的话，便接近大功告成了！</p>
+<h2 id="发布"><a href="#发布" class="headerlink" title="发布"></a>发布</h2><p>　　首先需要在LÖVE for Android目录下新建assets文件夹，然后将游戏打包命名为<code>game.love</code>并放置过去。然后在LÖVE for Android目录下执行<code>$ ant debug</code>即可，稍等便会于bin目录下生成apk文件。<br>　　当然这样生成的apk文件与从官网直接下载的APK包外表无异，所以仍需要定制化，参考<a href="https://bitbucket.org/MartinFelis/love-android-sdl2/wiki/Game_Packaging" target="_blank" rel="external">此篇</a>即可，不再复述。</p>
+<h2 id="后续问题"><a href="#后续问题" class="headerlink" title="后续问题"></a>后续问题</h2><ul>
+<li>由于在大多数硬盘格式上是不区分大小写的，而到了<code>.love</code>文件下则会区分。这点需要仔细检查。</li>
+<li>由于LÖVE for Android使用的LuaJIT版本为2.1，而普世平台（Windows/macOS/Ubuntu）使用的版本还在2.0.4，而2.1与2.0的字节码无法兼容，所以需要使用2.1版本进行生成。</li>
+<li>在手机上对于GLSL的格式要求更为严格，详情参考<a href="https://bitbucket.org/MartinFelis/love-android-sdl2/wiki/Shaders_in_Android/" target="_blank" rel="external">此篇</a>，总体来说便是：<strong>不要写整数，小数点结尾也不要带f</strong>。</li>
+</ul>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　其实当年也曾在Windows系统部署过，却未曾有现在这般多坑，可见流行系统也有流行系统的好处啊。这篇文章似乎都可以投稿到他们仓库了呢（笑）</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/07/27/dfq_res/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1934,181 +2111,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/01/20/dnf_mobile_ex/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Musoucrow">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Musoucrow' BLOG">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/01/20/dnf_mobile_ex/" itemprop="url">
-                  《DNFMobile》图片资源提取笔记
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-20T03:47:38+08:00">
-                2018-01-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Analysis/" itemprop="url" rel="index">
-                    <span itemprop="name">Analysis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/01/20/dnf_mobile_ex/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/01/20/dnf_mobile_ex/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/01/20/dnf_mobile_ex/" class="leancloud_visitors" data-flag-title="《DNFMobile》图片资源提取笔记">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors </span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　《DNFMobile》的新一波内测到来了，恰好得到了安装包。便欲对比其资源较之端游有何不同，遂试图提取之。在尝试的途中遇到了不少问题，特此记录之。<a href="https://git.coding.net/musoucrow/DNFMobileEX.git" target="_blank" rel="external">源码地址</a></p>
-<h2 id="读取资源包"><a href="#读取资源包" class="headerlink" title="读取资源包"></a>读取资源包</h2><p>　　与众多手游的习惯一样，初始的安装包所携带的资源甚少，皆需经过更新方才完整。更新后经过观察得知游戏采用<a href="https://unity3d.com" target="_blank" rel="external">Unity</a>制作，那么事情便简单了，直接上<a href="https://github.com/Perfare/UnityStudio" target="_blank" rel="external">UnityStudio</a>读取。虽然资源文件的后缀名为.npk，但实际上则是Unity的AssetBundle，且并未作加密。然而诸多现成的Unity提取工具皆有多少缺陷（无法识别pvr格式、无法批量化操作、导出资源过于原始等），且图片资源是大图形式存在的，需要进行切图，而使用切图工具一则怕不够精确，二则怕无法批量化。于是我选择直接使用Unity制作工具以面对此需求。<br>　　由于资源文件本身即是Unity的格式，那么直接调用API加载即可，类似如此：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> assetBundle = AssetBundle.LoadFromFile(path);</div><div class="line"><span class="keyword">var</span> assetBundle.LoadAllAssets&lt;Texture2D&gt;();</div><div class="line"></div><div class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> tex <span class="keyword">in</span> texs) &#123;</div><div class="line">	<span class="comment">//...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="切图"><a href="#切图" class="headerlink" title="切图"></a>切图</h2><p>　　这样可谓相当方便，接下来的问题便是切图了。我本以为大图是由Unity自动生成，所以理应资源内会有对应的Sprite资源，这样通过Sprite资源的信息即可进行切割。但实际上并非如此：大图是事先生成好，然后使用脚本填写每帧配置在运行时自动生成Sprite。这种做法也是理所当然的，毕竟Unity的Sprite的pivot与DNF的IMG包提供的偏移点可谓天南地北。（一者为当前图片下的浮点百分比，另一者为实际坐标）通过直接在配置直接对接IMG包的数据然后进行转化这是很正常的做法。可这下子就麻烦了，我们并无法直接知道这脚本的具体信息。幸好UnityStudio的解析中包括了关于MonoBehavior资源配置的信息。<br><img src="https://musoucrow.github.io/images/dnf_mobile_ex/bwanga.png" alt="bwanga"><br>　　可即使知道也无法直接Unity进行获取，毕竟我们本身是没有该脚本的。鉴于UnityStudio开源的特性，我起初打算阅读源码掌握其解析之法。最后也成功了，可我突然脑内灵光一闪，想到了直接建立一个同名脚本，并根据配置的信息进行模拟。代码如下：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">using</span> System;</div><div class="line"><span class="keyword">using</span> System.Collections;</div><div class="line"><span class="keyword">using</span> System.Collections.Generic;</div><div class="line"><span class="keyword">using</span> UnityEngine;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DNFAtlasAsset</span> : <span class="title">MonoBehaviour</span> &#123;</div><div class="line">    [Serializable]</div><div class="line">    <span class="keyword">public</span> <span class="keyword">struct</span> Rectf &#123;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">float</span> x;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">float</span> y;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">float</span> width;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">float</span> height;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    [Serializable]</div><div class="line">    <span class="keyword">public</span> <span class="keyword">struct</span> DNFAtlasElement &#123;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">string</span> name;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> originIndex;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> referenceIndex;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> originWidth;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> originHeight;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> offsetX;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> offsetY;</div><div class="line">        <span class="keyword">public</span> Rectf rect;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    [Serializable]</div><div class="line">    <span class="keyword">public</span> <span class="keyword">struct</span> DNFAtlasSlot &#123;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">int</span> matType;</div><div class="line">        <span class="keyword">public</span> DNFAtlasElement[] elementList;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">string</span> atalsName;</div><div class="line">    <span class="keyword">public</span> DNFAtlasSlot[] atlasSlotList;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>　　天可怜见，居然成功了！那么接下来采用类似如下方法即可：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> width = (<span class="keyword">int</span>)element.rect.width;</div><div class="line"><span class="keyword">int</span> height = (<span class="keyword">int</span>)element.rect.height;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (width == <span class="number">0</span> || height == <span class="number">0</span>) &#123;</div><div class="line">	<span class="keyword">continue</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">var</span> colors = tex.GetPixels((<span class="keyword">int</span>)element.rect.x, (<span class="keyword">int</span>)element.rect.y, width, height);</div><div class="line"><span class="keyword">var</span> newTex = <span class="keyword">new</span> Texture2D(width, height, tex.format, tex.mipmapCount &gt; <span class="number">1</span>);</div><div class="line">newTex.SetPixels(colors);</div><div class="line">newTex.Apply();</div><div class="line"></div><div class="line"><span class="keyword">var</span> path = <span class="keyword">this</span>.GetPath() + tex.name + <span class="string">"/"</span>;</div><div class="line"><span class="keyword">var</span> bytes = newTex.EncodeToPNG();</div><div class="line"><span class="keyword">var</span> json = JsonUtility.ToJson(element);</div><div class="line"><span class="keyword">var</span> name = <span class="keyword">this</span>.ToNumber(element.name);</div><div class="line"></div><div class="line"><span class="keyword">this</span>.CreateDirectory(path);</div><div class="line">File.WriteAllText(path + name + <span class="string">".json"</span>, json);</div><div class="line">File.WriteAllBytes(path + name + <span class="string">".png"</span>, bytes);</div><div class="line">Texture2D.DestroyImmediate(newTex, <span class="literal">true</span>);</div></pre></td></tr></table></figure>
-<p>　　主要思路便是通过GetPixels方法读取区域像素并覆盖至新图。最后将图片转换为PNG、配置转换为JSON并输出即可。<br>　　当然这里还有关于Texture2D的readable问题，隶属于资源包的Texture2D并无法直接使用GetPixels方法，需要对其进行复制，然后利用新图施为，为此我写了个函数：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Texture2D <span class="title">GetTexture</span>(<span class="params">Texture2D tex</span>)</span>&#123;</div><div class="line">	<span class="keyword">if</span> (!<span class="keyword">this</span>.texureMap.ContainsKey(tex)) &#123;</div><div class="line">		<span class="keyword">if</span> (tex.width == <span class="number">0</span> || tex.height == <span class="number">0</span>) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="literal">null</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">var</span> copyTex = <span class="keyword">new</span> Texture2D(tex.width, tex.height, tex.format, tex.mipmapCount &gt; <span class="number">1</span>);</div><div class="line">		copyTex.LoadRawTextureData(tex.GetRawTextureData());</div><div class="line">		copyTex.Apply();</div><div class="line">		<span class="keyword">var</span> writeTex = <span class="keyword">new</span> Texture2D(copyTex.width, copyTex.height);</div><div class="line">		writeTex.SetPixels32(copyTex.GetPixels32());</div><div class="line">		writeTex.Apply();</div><div class="line">		writeTex.name = <span class="keyword">this</span>.ToName(tex.name);</div><div class="line"></div><div class="line">		<span class="keyword">this</span>.texureMap[tex] = writeTex;</div><div class="line">		Texture2D.DestroyImmediate(copyTex, <span class="literal">true</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.texureMap[tex];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>　　以上便是关于切图方面的问题，具体可参阅源码。</p>
-<h2 id="内存问题"><a href="#内存问题" class="headerlink" title="内存问题"></a>内存问题</h2><p>　　游戏目前的资源包数量高达2900以上，在尝试一口气全部提取时内存竟然高达5G！最终电脑不堪重负倒下收场。这很显然是资源并未回收所致，是以作此函数：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Destroy</span>(<span class="params"></span>) </span>&#123;</div><div class="line">	<span class="keyword">foreach</span> (<span class="keyword">var</span> texture <span class="keyword">in</span> <span class="keyword">this</span>.texureMap) &#123;</div><div class="line">		Texture2D.DestroyImmediate(texture.Key, <span class="literal">true</span>);</div><div class="line">		Texture2D.DestroyImmediate(texture.Value, <span class="literal">true</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">this</span>.texureMap.Clear();</div><div class="line">	<span class="keyword">this</span>.assetBundle.Unload(<span class="literal">true</span>);</div><div class="line">	AssetBundle.DestroyImmediate(<span class="keyword">this</span>.assetBundle, <span class="literal">true</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>　　这里采用的是DestroyImmediate方法，好处是立即进行回收，但却会因此阻塞，影响提取效率。若使用Destroy方法则不会如此，不过峰值内存会上升。但大规模读取时还是以稳定为主，而小份读取则两者并无所谓。是以选择DestroyImmediate方法。<br>　　另外在其他地方涉及到资源生成且是继承自UnityEngine.Object的，皆需注意此问题。在经过优化后，占用由5G跌倒了500M-1.5G之间，成功提取了全部图片资源。大功告成！</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　这次《DNFMobile》的声音资源经过了高压，原本几M的音乐变成了上百K，可谓惨不忍听，遂无提取的价值。而纸娃娃方面则是采用了类似NPK_Ver4的色板做法，也并无法直接提取到成品。由此可见制作组为了节省空间可是下了不少功夫呀。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2158,7 +2160,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

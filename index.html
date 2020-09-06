@@ -291,6 +291,192 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2020/09/06/lbbn_water/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2020/09/06/lbbn_water/" itemprop="url">
+                  在URP实现水面效果
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-06T20:21:34+08:00">
+                2020-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Teach/" itemprop="url" rel="index">
+                    <span itemprop="name">Teach</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/09/06/lbbn_water/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/09/06/lbbn_water/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/09/06/lbbn_water/" class="leancloud_visitors" data-flag-title="在URP实现水面效果">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>     </p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　Demo的场景也到了做水面的时候了，在涉及技术之前首先要确定的是<strong>美术表达</strong>：当然大体上也就是<em>卡通水与写实水</em>的抉择，最终决定是做出《伊苏：起源》<br>那样的写实水（注重扭曲、透视、无形变），并在此之上现代化。<br><img src="https://musoucrow.github.io/images/lbbn_water/0.png" alt="0"></p>
+<h2 id="上色"><a href="#上色" class="headerlink" title="上色"></a>上色</h2><p>　　首先我们先找个小池子作为试验场地——这样利于观测，那么很显然密室场景的熔岩就可以暂退了：<br><img src="https://musoucrow.github.io/images/lbbn_water/1.png" alt="1"><br>　　水面的本质很简单，它就是个面片而已（不论海浪）。最直接的第一步自然是上色：<br><img src="https://musoucrow.github.io/images/lbbn_water/2.png" alt="2"><br>　　上色之后自然是透视，把材质设置为<code>Transparent</code>，调整下透明度：<br><img src="https://musoucrow.github.io/images/lbbn_water/3.png" alt="3"><br>　　很好，其实对于一些游戏的低画质，这个水面已经是成品了。当然这也太捞了，继续演进——</p>
+<h2 id="扭曲的准备"><a href="#扭曲的准备" class="headerlink" title="扭曲的准备"></a>扭曲的准备</h2><p>　　对于水面效果的重点自然是<strong>扭曲</strong>了，处于水中的部分都会因为光的折射而变化。当然我们实际做起来并不会遵照这些大道理，看着是那么回事就得了（图形学第一定律）。最简单的做法自然是把<strong>对象渲染完毕后的画面</strong>截获，水面材质再选取<strong>合适的画面部分</strong>显示，并基于此加入扭曲——<br>　　对于Built-In管线而言，想做到这点使用<code>GrabPass</code>即可，这方面的实现在《Unity Shader入门精要》已有详细做法。可是由于其设计不符合SRP的哲学，在URP已经被毙了，于是我们只能另寻他法了。<br>　　当然实际上也没那么麻烦，思想已经有了，找到对应的实现方法即可：对象渲染完毕后的画面生成在URP可以通过管线设置文件勾选<code>Opaque Texture</code>实现，然后便可在Shader声明<code>_CameraColorTexture</code>调用。<br><img src="https://musoucrow.github.io/images/lbbn_water/4.png" alt="4"><br>　　当然仅仅如此会有个问题：此图的生成时机是渲染所有<strong>非透明（Opaque）对象</strong>后，对于具有透明度的对象（Transparent）的渲染时机是在此之后的，这样水面里将会看不到Transparent对象了。对于此有两个解决方案：</p>
+<ul>
+<li>修改源码，将生成时机调到Transparent渲染之后。</li>
+<li>利用<code>RenderFeature</code>自行在合适的时机生成画面Texture。</li>
+</ul>
+<p>　　经过项目实际情况的考虑，我选择修改源码（具体修改在<a href="https://github.com/MusouCrow/MyURP" target="_blank" rel="external">MyURP</a>）。在<code>Frame Debugger</code>可以看到渲染时机已经变为Transparent之后了：<br><img src="https://musoucrow.github.io/images/lbbn_water/5.png" alt="5"><br>　　做到这步只能算是准备好了子弹，接下来还要制造枪械：由于自带的Shader Pass的渲染时机并不在生成<code>_CameraColorTexture</code>之后，所以我们需要利用<code>RenderFeature</code>构建个渲染时机生成之后的环节。这里直接使用URP自带的<code>Render Objects</code>即可满足：<br><img src="https://musoucrow.github.io/images/lbbn_water/6.png" alt="6"><br>　　如此只要Shader里Tag名为<code>Grab</code>的Pass，都将会在此<code>RenderFeature</code>进行渲染。接下来便是完成Shader：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">SubShader</div><div class="line">&#123;</div><div class="line">    Pass</div><div class="line">    &#123;</div><div class="line">        Tags &#123; <span class="string">"LightMode"</span> = <span class="string">"Grab"</span> &#125;</div><div class="line"></div><div class="line">        Blend [_SrcBlend][_DstBlend]</div><div class="line">        ZWrite[_ZWrite]</div><div class="line">        Cull [_Cull]</div><div class="line"></div><div class="line">        HLSLPROGRAM</div><div class="line"></div><div class="line">        <span class="meta">#<span class="meta-keyword">pragma</span> prefer_hlslcc gles</span></div><div class="line">        <span class="meta">#<span class="meta-keyword">pragma</span> exclude_renderers d3d11_9x</span></div><div class="line">        <span class="meta">#<span class="meta-keyword">pragma</span> target 2.0</span></div><div class="line"></div><div class="line">        <span class="meta">#<span class="meta-keyword">pragma</span> vertex Vert</span></div><div class="line">        <span class="meta">#<span class="meta-keyword">pragma</span> fragment Frag</span></div><div class="line"></div><div class="line">        <span class="meta">#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"</span></div><div class="line"></div><div class="line">        CBUFFER_START(UnityPerMaterial)</div><div class="line">        half4 _Color;</div><div class="line">        <span class="function">CBUFFER_END</span></div><div class="line"></div><div class="line">        <span class="title">TEXTURE2D</span>(<span class="params">_CameraColorTexture</span>); SAMPLER(sampler_CameraColorTexture);</div><div class="line"></div><div class="line">        <span class="keyword">struct</span> Attributes</div><div class="line">        &#123;</div><div class="line">            half4 positionOS : POSITION;</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        <span class="keyword">struct</span> Varyings</div><div class="line">        &#123;</div><div class="line">            half4 positionCS : SV_POSITION;</div><div class="line">            half4 screenPos : TEXCOORD0;</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        <span class="function">Varyings <span class="title">Vert</span>(<span class="params">Attributes input</span>)</span></div><div class="line">        &#123;</div><div class="line">            Varyings output;</div><div class="line">            VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);</div><div class="line"></div><div class="line">            output.positionCS = vertexInput.positionCS;</div><div class="line">            output.screenPos = ComputeScreenPos(output.positionCS);</div><div class="line"></div><div class="line">            <span class="keyword">return</span> output;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function">half4 <span class="title">Frag</span>(<span class="params">Varyings input</span>) : SV_Target</span></div><div class="line">        &#123;</div><div class="line">            half3 color = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, input.screenPos.xy / input.screenPos.w);</div><div class="line"></div><div class="line">            <span class="keyword">return</span> half4(_Color.rgb * color, _Color.a);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        ENDHLSL</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>　　Shader实现与一般形式十分相似，主要在于用上了<code>_CameraColorTexture</code>以及<code>ComputeScreenPos</code>函数，看看效果先：<br><img src="https://musoucrow.github.io/images/lbbn_water/7.png" alt="7"><br>　　看得出效果还是有所不同的，毕竟现在水面显示的不再是一层半透明蓝色了，而是原有画面的基础上调色。现在万事俱备，只欠东风了——</p>
+<h2 id="扭曲的实现"><a href="#扭曲的实现" class="headerlink" title="扭曲的实现"></a>扭曲的实现</h2><p>　　实现扭曲我们需要一张表达水面的法线贴图，或者噪声贴图也行。本质上是偏移UV，以产生扭曲的结果。我选择使用法线贴图，因为后续也有用到。<br>　　水面法线贴图的生产我并不了解，目前是随便找张不规则图形的基础上使用Unity自带的<code>Create from Grayscale</code>生成的，效果居然还不错：<br><img src="https://musoucrow.github.io/images/lbbn_water/8.png" alt="8"><br>　　应用起来也很简单，获取法线贴图的xy数据加到<code>screenPos.xy</code>即可。当然仅此而已的话水面是不会动的，所以我们还可以加个与时间挂钩的偏移值，以推动法线贴图的uv，便可产生动起来的效果：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function">half4 <span class="title">Frag</span>(<span class="params">Varyings input</span>) : SV_Target</span></div><div class="line">&#123;</div><div class="line">    half2 speed = _Speed * _Time.y * <span class="number">0.01</span>;</div><div class="line">    half3 bump = UnpackNormal(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, input.uv.zw + speed)).rgb;</div><div class="line">    half2 offset = bump.xy;</div><div class="line">    input.screenPos.xy += offset * input.screenPos.z;</div><div class="line"></div><div class="line">    half3 color = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, input.screenPos.xy / input.screenPos.w);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> half4(_Color.rgb * color, _Color.a);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="https://musoucrow.github.io/images/lbbn_water/9.gif" alt="9">  </p>
+<p>　　不错不错，对于某些游戏而言，到了这步也算完成了。但还不够——</p>
+<h2 id="着色"><a href="#着色" class="headerlink" title="着色"></a>着色</h2><p>　　目前有一个很明显的不足：虽然有了扭曲，但水面还是平平的一片蓝色，显然是缺乏明暗的体现。此时先前的法线贴图便可再次派上用场了：结合法线来做漫反射（Diffuse）效果。当然我们还不能直接使用取得的法线，还得将其转换至世界空间才行。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function">Varyings <span class="title">Vert</span>(<span class="params">Attributes input</span>)</span></div><div class="line">&#123;</div><div class="line">    ...</div><div class="line">    VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);</div><div class="line">    half3 viewDirWS = GetCameraPositionWS() - vertexInput.positionWS;</div><div class="line">    </div><div class="line">    output.TtoW0 = half4(normalInput.tangentWS.x, normalInput.bitangentWS.x, normalInput.normalWS.x, viewDirWS.x);  </div><div class="line">    output.TtoW1 = half4(normalInput.tangentWS.y, normalInput.bitangentWS.y, normalInput.normalWS.y, viewDirWS.y);  </div><div class="line">    output.TtoW2 = half4(normalInput.tangentWS.z, normalInput.bitangentWS.z, normalInput.normalWS.z, viewDirWS.z);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">half4 <span class="title">Frag</span>(<span class="params">Varyings input</span>) : SV_Target</span></div><div class="line">&#123;</div><div class="line">    ...</div><div class="line"></div><div class="line">    <span class="comment">// 书接上文的bump</span></div><div class="line">    bump = normalize(half3(dot(input.TtoW0.xyz, bump), dot(input.TtoW1.xyz, bump), dot(input.TtoW2.xyz, bump)));</div><div class="line">    Light light = GetMainLight();</div><div class="line">    ...</div><div class="line"></div><div class="line">    color = Diffuse(color, light.direction, bump);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">half3 <span class="title">Diffuse</span>(<span class="params">half3 color, half3 lightDir, half3 normal</span>)</span></div><div class="line">&#123;</div><div class="line">    half NDotL = dot(normal, lightDir) + <span class="number">0.5</span> * <span class="number">0.5</span>;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> color * NDotL;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>　　这里漫反射用的是半兰伯特（Half-Lambert），这是为了保证水面的亮度足够，看看效果：<br><img src="https://musoucrow.github.io/images/lbbn_water/10.gif" alt="10"><br>　　嗯，有点味道了。再加个高光看看吧：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function">half3 <span class="title">Specular</span>(<span class="params">half3 color, half3 lightDir, half3 viewDir, half3 normal</span>)</span></div><div class="line">&#123;</div><div class="line">    half3 halfVec = normalize(lightDir + viewDir);</div><div class="line">    half NdotH = dot(normal, halfVec);</div><div class="line">    NdotH = saturate(NdotH);</div><div class="line"></div><div class="line">    half v = pow(NdotH, _Smoothness);</div><div class="line">    v *= _SpecularStrength;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> color + color * v;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="https://musoucrow.github.io/images/lbbn_water/11.gif" alt="11"><br>　　越来越有味了，不过感觉这种高光不够突出光点，加个Step试试：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">half v = pow(NdotH, _Smoothness);</div><div class="line">v = step(_SpecularRamp, v);</div><div class="line">v *= _SpecularStrength;</div></pre></td></tr></table></figure>
+<p><img src="https://musoucrow.github.io/images/lbbn_water/12.gif" alt="12"><br>　　不错不错，就这样吧，到实际场合看看。</p>
+<h2 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h2><p><img src="https://musoucrow.github.io/images/lbbn_water/13.gif" alt="13"><br>　　目前的效果如上，总的来说算是OK了，但感觉还是差了点什么……没错，就是<strong>反射</strong>。起初我很自然而然的脑补认为要让周边的岩石草木投射在水面，为此我尝试了各种方案（反射探针、反射摄像机、平面反射……）都不满意，最终发现这纯属脑补了。实际由于视角原因是达不到那样的效果的，能够反射的内容基本会与折射重叠。醒悟之后发现最合适的反射内容只有纵身跳入的人物以及天空罢了：前者的出现场合太少了，对于后者与其用各种反射手段，还不如直接<strong>弄张天空贴图</strong>完事。  </p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function">half4 <span class="title">Frag</span>(<span class="params">Varyings input</span>) : SV_Target</span></div><div class="line">&#123;</div><div class="line">    ...</div><div class="line"></div><div class="line">    half3 texColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv.xy + speed);</div><div class="line">    half3 color = lerp(<span class="number">1</span>, texColor, _Fresnel);</div><div class="line">    color = Diffuse(color, light.direction, bump);</div><div class="line">    color *= SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, input.screenPos.xy / input.screenPos.w);</div><div class="line">    color = Specular(color, light.direction, viewDir, bump);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> half4(_Color.rgb * color, _Color.a);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>　　弄了张天空贴图，结合扭曲所用的偏移值进行uv移动，使用<code>_Fresnel</code>控制反射与折射的比例。注意这里的<code>_Fresnel</code>仅仅是个0-1的参数，并非是真正的菲涅耳系数（由于视角关系根本用不到）。来对比下吧：<br><img src="https://musoucrow.github.io/images/lbbn_water/14.png" alt="14"><br><img src="https://musoucrow.github.io/images/lbbn_water/15.png" alt="15"><br>　　这样的假反射在美术上的意义主要是能让水的颜色没那么单调，并且由于贴图是移动的，也带来了更多的动感。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　最后加上点互动特效，有那么点意思了：<br><img src="https://musoucrow.github.io/images/lbbn_water/16.gif" alt="16"><br>　　在加这波粒子特效时也遇到了不少问题，也多了一些想要实现的东西。限于篇幅只能留待日后了。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2020/08/02/lbbn_baked/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -422,13 +608,13 @@
 <li>在片元着色器对光照贴图或探针进行取色（<code>SAMPLE_GI(lmName, shName, normalWSName)</code>），最后将之加入到着色环节即可</li>
 <li>若是想要烘焙模式下也能接受实时阴影，记得调用<code>MixRealtimeAndBakedGI</code>函数</li>
 </ul>
-<p>　　总的来说都封装好了，照着拼凑而已。那么事不宜迟，直接按照默认的烘焙配置整个看看，记得要将GameObject的Static里的<code>Contribute GI</code>勾选方可参与烘焙：<br><img src="https://musoucrow.github.io/images/lbbn_baked/0.png" alt="0"><br>　　看着似乎还不错，那么对比下原生看看吧：<br><img src="https://musoucrow.github.io/images/lbbn_baked/1.png" alt="1"><br>　　这么一看还是有不少差距的，必须要让烘焙与实时的效果高度接近才行呐——</p>
+<p>　　总的来说都封装好了，照着拼凑而已。那么事不宜迟，直接按照默认的烘焙配置整个看看，记得要将GameObject的Static里的<code>Contribute GI</code>勾选方可参与烘焙：<br><img src="https://musoucrow.github.io/images/lbbn_baked/0.png" alt="0"><br>　　看着似乎还不错，那么对比下实时看看吧：<br><img src="https://musoucrow.github.io/images/lbbn_baked/1.png" alt="1"><br>　　这么一看还是有不少差距的，必须要让烘焙与实时的效果高度接近才行呐——</p>
 <h2 id="ShadowMask"><a href="#ShadowMask" class="headerlink" title="ShadowMask"></a>ShadowMask</h2><p>　　经过与烘焙设置一番斗智斗勇后，我发现我要的仅仅是让<strong>阴影烘焙</strong>，以节省阴影的运算罢了。什么全局光照、烘焙自带的着色等等都是不需要的。为此我尝试过不少骚操作：生成光照贴图后进行二值化处理、直接在Shader对烘焙色进行处理等……可惜这些方案都只是治标不治本，要么在流程上繁琐，要么性能不佳，要么无法应对所有情况。最终我把目光放在了烘焙三模式之一的<strong>ShadowMask</strong>，它将单独生成阴影贴图，那么若是我只用它，抛弃光照贴图，便可达到目的了。<br>　　不幸的是，URP并没有支持ShadowMask，官网显示仍处于In research状态。幸好网上有其他人做了<a href="https://catlikecoding.com/unity/tutorials/custom-srp/shadow-masks/" target="_blank" rel="external">实现ShadowMask的教程</a>，顺便也学习了一波可编程渲染管线（SRP）的基础知识。经过研究发现，ShadowMask的添加并不复杂，甚至可以说是URP主动将之关闭了（<em>严重怀疑是故意拖到后面做，显得有活干</em>）。当然这么干了之后就表示需要维护自己的URP版本了，顺便将之<a href="https://github.com/MusouCrow/MyURP" target="_blank" rel="external">开源</a>了。<br>　　SRP本质上是开放了一个可供用户定制的表层，多数核心功能还是封装好的。ShadowMask也不例外，其生成附属于烘焙模块。我们要做的只是添加一些设置，以及相应的Shader支持罢了：</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 添加Shadowmask字段以让界面开启选项</span></div><div class="line">mixedLightingModes = SupportedRenderingFeatures.LightmapMixedBakeModes.Subtractive | SupportedRenderingFeatures.LightmapMixedBakeModes.IndirectOnly | SupportedRenderingFeatures.LightmapMixedBakeModes.Shadowmask</div><div class="line"></div><div class="line"><span class="comment">// 添加Shader关键字，以决定是否启用功能</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="keyword">string</span> MixedLightingShadowmask = <span class="string">"SHADOWS_SHADOWMASK"</span>;</div><div class="line"></div><div class="line"><span class="comment">// 根据条件设置相应的Shader关键字</span></div><div class="line">CoreUtils.SetKeyword(cmd, ShaderKeywordStrings.MixedLightingShadowmask, renderingData.lightData.supportsMixedLighting &amp;&amp;m_MixedLightingSetup == MixedLightingSetup.ShadowMask);</div></pre></td></tr></table></figure>
 <p>　　Shader方面要做的调整也不多，URP本身自带ShadowMask的贴图变量<code>TEXTURE2D(unity_ShadowMask);</code>，其UV与光照贴图一致，复用即可。记得在Shader添加multi_compile <code>SHADOWS_SHADOWMASK</code>以判别是否处于ShadowMask模式下。  </p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(SHADOWS_SHADOWMASK) &amp;&amp; defined(LIGHTMAP_ON)</span></div><div class="line">    <span class="comment">// ShadowMask贴图只有R通道</span></div><div class="line">    half shadowMask = SAMPLE_TEXTURE2D(unity_ShadowMask, samplerunity_ShadowMask, lightmapUV).r;</div><div class="line"></div><div class="line">    <span class="comment">// 不超过光照Strength值</span></div><div class="line">    shadowMask = LerpWhiteTo(shadowMask, GetMainLightShadowStrength());</div><div class="line"></div><div class="line">    <span class="comment">// 加入到阴影着色中</span></div><div class="line">    light.shadowAttenuation = min(light.shadowAttenuation, shadowMask);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure>
 <p>　　大致要做的事情就这么多，烘焙设置除阴影方面外，能怎么快就怎么设置（反正也用不上光照贴图了），一般来说需要注意的有<code>Bounces</code>要设为1，不然阴影会不完整。<code>Flitering</code>将对阴影贴图做边缘柔和处理，<code>Lightmap Resolution</code>与<code>Lightmap Size</code>决定阴影质量，参考如下：<br><img src="https://musoucrow.github.io/images/lbbn_baked/2.png" alt="2"><br>　　另外需要注意的是，阴影精度很大程度上取决于模型的大小，因为<strong>一个模型只能有一张光照/阴影贴图</strong>，在贴图大小定死上限的前提下，模型越大贴图的解析度自然越低。那么来看看效果吧，<strong>图一为实时，图二为烘焙</strong>：<br><img src="https://musoucrow.github.io/images/lbbn_baked/3.jpg" alt="3"><br><img src="https://musoucrow.github.io/images/lbbn_baked/4.jpg" alt="4"><br>　　效果可以说是高度接近了，干掉了光照贴图后着色变得完全一致，阴影贴图在合理的设置下也达到了高度接近实时的效果。坡肥！</p>
-<h2 id="光照探针"><a href="#光照探针" class="headerlink" title="光照探针"></a>光照探针</h2><p>　　现在虽然实现了高度接近实时的阴影烘焙，但显而易见，当人物走向阴影处便会是这样的结果：<br><img src="https://musoucrow.github.io/images/lbbn_baked/5.png" alt="5"><br>　　在某些游戏也许不太理会这种现象，但这也太捞了，光照探针便是为了解决这个问题而生的。通过在场景布置探针，将会根据动态对象附近的探针取色决定明暗度：<br><img src="https://musoucrow.github.io/images/lbbn_baked/6.gif" alt="6"><br>　　光照探针如果要手动布置那实在是太麻烦了，于是我使用了这个<a href="https://github.com/laurenth-personal/LightingTools.LightProbesVolumes" target="_blank" rel="external">插件</a>，通过简单的设置暴力的去平铺一波：<br><img src="https://musoucrow.github.io/images/lbbn_baked/12.png" alt="12"><br>　　根据官方文档说法，探针数量与性能成反比。但此插件平铺并不会把探针置于模型内部，以及对比了下《使命召唤手游》的光照探针，感觉还行：<br><img src="https://musoucrow.github.io/images/lbbn_baked/13.jpg" alt="13"><br>　　Shader方面没什么要改的，在URP获取光照函数<code>GetMainLight()</code>本身自带了对光照探针的着色处理（附加在<code>light.distanceAttenuation</code>中），由于不需要用到全局光照，之前的<code>OUTPUT_SH</code>之类的都可以删了。当然有个现象需要注意下：<br><img src="https://musoucrow.github.io/images/lbbn_baked/7.gif" alt="7"><br>　　可以看到在暗处时实在是太黑了（也许是放弃了全局光照导致），于是我们加个约束，将暗值约束在光照Strength到1：  </p>
+<h2 id="光照探针"><a href="#光照探针" class="headerlink" title="光照探针"></a>光照探针</h2><p>　　现在虽然实现了高度接近实时的阴影烘焙，但显而易见，当人物走向阴影处便会是这样的结果：<br><img src="https://musoucrow.github.io/images/lbbn_baked/5.png" alt="5"><br>　　在某些游戏也许不太理会这种现象，但这也太捞了，光照探针便是为了解决这个问题而生的。通过在场景布置探针，将会根据动态对象附近的探针取色决定明暗度：<br><img src="https://musoucrow.github.io/images/lbbn_baked/6.gif" alt="6"><br>　　光照探针如果要手动布置那实在是太麻烦了，于是我使用了这个<a href="https://github.com/laurenth-personal/LightingTools.LightProbesVolumes" target="_blank" rel="external">插件</a>，通过简单的设置暴力的去平铺一波：<br><img src="https://musoucrow.github.io/images/lbbn_baked/12.png" alt="12"><br>　　根据官方文档说法，探针数量与性能成反比（但越多越精确）。但此插件平铺并不会把探针置于模型内部，以及对比了下《使命召唤手游》的光照探针，感觉还行：<br><img src="https://musoucrow.github.io/images/lbbn_baked/13.jpg" alt="13"><br>　　Shader方面没什么要改的，在URP获取光照函数<code>GetMainLight()</code>本身自带了对光照探针的着色处理（附加在<code>light.distanceAttenuation</code>中），由于不需要用到全局光照，之前的<code>OUTPUT_SH</code>之类的都可以删了。当然有个现象需要注意下：<br><img src="https://musoucrow.github.io/images/lbbn_baked/7.gif" alt="7"><br>　　可以看到在暗处时实在是太黑了（也许是放弃了全局光照导致），于是我们加个约束，将暗值约束在光照Strength到1：  </p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">if</span> !defined(LIGHTMAP_ON) &amp;&amp; defined(_MIXED_LIGHTING_SUBTRACTIVE)</span></div><div class="line">    mainLight.distanceAttenuation = lerp(GetMainLightShadowStrength(), <span class="number">1</span>, saturate(mainLight.distanceAttenuation));</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure>
 <p><img src="https://musoucrow.github.io/images/lbbn_baked/8.gif" alt="8"><br>　　很好，这下可以说是大功告成了！</p>
 <h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　最后演示下不同光影品质下的差别吧，分别为低、中、高：<br><img src="https://musoucrow.github.io/images/lbbn_baked/9.gif" alt="9"><br><img src="https://musoucrow.github.io/images/lbbn_baked/10.gif" alt="10"><br><img src="https://musoucrow.github.io/images/lbbn_baked/11.gif" alt="11"><br>　　话虽如此，可我发现目前直接把高品质光影扔到iPhone8下居然稳定59帧，太强了……<br><img src="https://musoucrow.github.io/images/lbbn_baked/14.png" alt="14"></p>
@@ -1897,173 +2083,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2019/10/17/dfq_end/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Musoucrow">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Musoucrow' BLOG">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2019/10/17/dfq_end/" itemprop="url">
-                  《DFQ》开发随录——后记
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T11:18:18+08:00">
-                2019-10-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Development/" itemprop="url" rel="index">
-                    <span itemprop="name">Development</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/10/17/dfq_end/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/10/17/dfq_end/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2019/10/17/dfq_end/" class="leancloud_visitors" data-flag-title="《DFQ》开发随录——后记">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors </span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　DFQ终究是顺利的开发完成，并在发布之后的短短四日内达到<strong>接近十万的下载量</strong>。赢得广大玩家的好评，甚者认为比之官方的手游<strong>品质更佳</strong>。然而这一切恍若黄粱一梦，于昨日晚上收到了来自腾讯的律师函，要求删除<strong>相关下载渠道与宣传内容</strong>。<br>　　取得这等成绩自是喜人，能被腾讯警惕也证明品质确实出色。只可惜游戏尚有一些待完善之处，无法再为玩家提供更新了。在此期间也有不少请求换皮合作的邀请，但本人志不在此。也不想讨论相关太多，就来为这个项目做个总结吧。</p>
-<h2 id="程序"><a href="#程序" class="headerlink" title="程序"></a>程序</h2><p>　　关于制作DFQ的想法，在《阿拉德英雄传》3.0搁置以后便有了模糊的想法。认为要做一款简洁爽快的中小型DNF同人手游，作为我、以及开元的DNF同人最终章。但随着增长了见识以后，便发现自己的程序架构掌控力不足，于是花了不少时间恶补。且前期对于要做一款怎样的游戏并无清晰的概念，遂直到<strong>2018年6月</strong>才正式开始制作。<br>　　由于DFQ算是弥补3.0搁置的一个执念，于是依旧选择了<a href="http://love2d.org" target="_blank" rel="external">LÖVE</a>引擎。事实上这是个<strong>重大的决策失误</strong>。LÖVE关于移动端方面的功能只是刚刚推出，且是冷门引擎，没人帮忙踩坑。于是在制作时便遇到了很多问题，包括相关库的缺少或不合适以至于要造轮子、引擎本身的BUG之类等等。在发布之后更是遇到了诸多问题（NO GAME、全面屏、DPI等），在此奉劝各位，<strong>不要用冷门引擎</strong>。<br>　　说回程序本身，这次基本上是达到我的要求了，至少工程不再是一塌糊涂、难以协作的状态了。对于各种方面的写法问题也有过深刻的研究（如活动对象采用ECS架构），对于代码格式与写法也有了规范。不足之处在于状态的业务按理来说应该配置化，而非OOP，因其存在大量<strong>相似而不同</strong>的业务，而这些部分是难以用OOP解决的。以及在OOP的规范上，我引入了private（以_前缀表示），然而会发现很多时候这只会增加不必要的思考负担以及封装成本，这方面该如何处理其实至今我仍未有答案（在业界也是众说纷纭）。<br>　　为了弥补Lua没有强类型与智能提示的缺点，我引入了<a href="https://github.com/EmmyLua/VSCode-EmmyLua" target="_blank" rel="external">EmmyLua</a>。所以看过之前的开源工程的会发现代码会有形如<code>---@class XXX</code>的注释，不过这种外挂的形式终究不如原生来的爽快，且缺乏运行前检查的功能。对于代码健壮性的建设尚嫌不足，由此可见TypeScript才是究极的工程化脚本啊。<br>　　在后续测试的图中遇到过一次<strong>严重的内存泄漏</strong>事故，基本上刷到第三个地下城时便会内存膨胀到难以接受的地步。通过使用<a href="https://github.com/yaukeywang/LuaMemorySnapshotDump" target="_blank" rel="external">LuaMemorySnapshotDump</a>发现，由于我为了减少内存申请，会将一些固定的table类参数写成模块变量，而使用后却没有及时清空，导致游戏对象一直依附其中，无法回收。以及为了优化而做的对象池也是如此，真是汗颜。  </p>
-<h2 id="美术"><a href="#美术" class="headerlink" title="美术"></a>美术</h2><p>　　美术方面可以说的不多，首先是由于因需求做了个<a href="https://github.com/MusouCrow/ParticleEditor" target="_blank" rel="external">粒子编辑器</a>，导致对粒子效果的掌控力上升。游戏的粒子特效使用率较之《阿拉德英雄传》有了大幅的提升。<br>　　在人物素材方面，实现了非常强大的纸娃娃，并且为了效率优化，纸娃娃是拼合成一张大图的，缺点在于合成相当耗时，需要在恰当的时机进行（如读图）。并且部分设备支持的图片大小最高为4096，而实际上则出现了超过该大小的图片（此问题至今尚未修复）。<br>　　在优化方面，由于引入了图集与压缩的措施，游戏的加载速度与显存占用是得到了极大的提升。在尚未采取压缩之前，小米9会出现显存带宽爆炸的情况。可以说安卓设备五花八门，令人十分头大。<br>　　UI方面，立绘依旧是小山龙同志的作品，质量较之当年可谓进步明显，原本打算采取live2d的方案，却因工期延宕而搁置了，实是一憾。至于界面本身，可以看出对于手游而言，连及格都称得上是勉强，实是因为一版过兼无经验所致。<br>　　手游UI与端游UI的不同处在于，由于屏幕太小，实际上UI要做的很大才显得正常。并且由于有着触控的需求，按钮也必须大且位置合适。如果为了美术效果而做得小，那也得必须要求附近无其他冲突项，且实际可触控范围要比素材看起来大才行。</p>
-<h2 id="游戏性"><a href="#游戏性" class="headerlink" title="游戏性"></a>游戏性</h2><p>　　DFQ的原初想法实是一款刷刷刷的类暗黑游戏，但本人感觉这年头的游戏都过度强调养成了。遂在砍掉养成的前提下重新审视，定下了三国战纪+Roguelike的主基调。三国战纪的元素在于：角色扮演、街机闯关、拾取道具，Roguelike则是随机性了，可谓独立游戏时下的流行元素，当然大家不约而同选择Roguelike的原因很简单：游戏内容不足，所以要用随机性来增添耐玩性。这么一组合起来，DFQ的样子便很明显了：开局一把刀，一切全靠打，随机地图事件，横版街机闯关。<br>　　但是仅仅如此还是不够的，要是玩家一直用着一成不变的搭配进行游戏，那可就太浪费了。传统游戏对于此的解决方案有：上下级替换、针对性关卡替换，然DFQ没有条件搞上下级替换，针对性替换也未免苛刻。于是抄袭《塞尔达传说：荒野之息》的武器耐久度设定，让武器、道具、技能都具有轮替性。这份轮替性对于玩家而言实是辛辣了，以至于赢得不少吐槽。在后续版本中便为此做出了调整优化，但实是最佳之法。关键在于：玩家需要自己感到可控的设计，而非稀里糊涂的机制。DFQ在不少方面都有类似问题（如最初设想的动态难度），实该检讨。<br>　　在关卡设计上，DFQ是以传统游戏的标准进行设计的，做出了不少较之DNF的突破（如跨房间追击战、迷宫等）。在开发前期犯下一个严重的错误：以端游的标准去做手游，以至于难度过大。手游的操作成本比端游要大，以及更适合轻度的体验。传统的DNF操作方式并不够爽快，遂在此基础上加入了小技能可互相强制、普攻可减少技能冷却的设计，让整个游戏的体验如打了肾上腺素一般。<br>　　除此之外，在做《阿拉德英雄传》多年以来，落下不少错误的思想，如怪物的攻击频率相当鬼畜、没有合适的前后摇等。虽然较之当年，我的ACT设计理解有所提升，引入了反击元素，但仍是不足。在小草泥马的一番军训后，引入了紧张时间与舒适时间的概念，领悟了张弛有度的道理。怪物的设计上会做出提供玩家利用的破绽，让战斗的体验达到了业界平均水平（指国际）。  </p>
-<h2 id="宣传"><a href="#宣传" class="headerlink" title="宣传"></a>宣传</h2><p>　　在此感谢轻声低语、瓦伦、夕阳飘羽三位同仁的协助，在DNF百度贴吧、COLG等处得到了极大的曝光，也感谢纷纷去安利、自发宣传的玩家们，以此得到了广泛关注。取得了<em>下载量近十万、B站宣传片十三万播放、贴吧关注量近七千、群人数两千七、COLG帖子47页</em>的成绩。<br>　　另外意想不到的是，以前《阿拉德英雄传》的玩家群体的活跃度也很高，并且开元工作室的名声也比想象中要大（不少人都知道，包括DNF吧的吧务），可见以前做下的成果也是有回报的。<br>　　其实在我看来，比较核心向的游戏，只要你知道受众的聚集地，并且有相关号召力的人士愿意帮忙。在赢得了核心玩家的认可下，宣传效果是非常棒的，哪怕远在韩国的好船同志也收到消息并通关了。这点和业界从广泛人群中捞玩家的买量游戏还是有所不同的。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　其实DFQ的成功，除了本身品质的优秀之外，更在于官方手游迟迟未发，当然最近又有动作了，这也算是撞枪口上了吧。且DFQ属于手游里少有的偏传统的单机类型，在玩腻了抽卡养成流水关卡的玩家看来，自然是十分闪耀的。而我之所以拒绝那些合作换皮的邀请，也在于我并没有想过符合游戏的商业化改造方案，如果按照市面上的那一套进行，结合下一次的天时地利人和，感觉迎来的只会是暴死吧。<br>　　经过这次的验证，可以见到我的ACT理解程度已经进入了新的台阶，然而这还不是我所能做到的极限，若有机会一定会再次整活。当然同人游戏是不会再做了，这次已经是撞倒了天花板，在各方面有其局限性。  </p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2113,7 +2132,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
