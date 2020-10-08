@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://musoucrow.github.io/"/>
-  <updated>2020-09-06T12:21:10.942Z</updated>
+  <updated>2020-10-08T11:32:44.127Z</updated>
   <id>https://musoucrow.github.io/</id>
   
   <author>
@@ -14,6 +14,44 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Visual Effect Graph魔改录</title>
+    <link href="https://musoucrow.github.io/2020/10/08/veg/"/>
+    <id>https://musoucrow.github.io/2020/10/08/veg/</id>
+    <published>2020-10-08T11:32:33.000Z</published>
+    <updated>2020-10-08T11:32:44.127Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>     </p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　<a href="https://musoucrow.github.io/2020/09/06/lbbn_water/">前文</a>提到关于粒子想实现一些东西，本篇便来还愿了。Demo使用的粒子系统并非传统的<a href="https://docs.unity.cn/cn/2019.4/Manual/Built-inParticleSystem.html" target="_blank" rel="external">Particle System</a>，而是基于GPU的<a href="https://docs.unity.cn/Packages/com.unity.visualeffectgraph@8.2/manual/index.html" target="_blank" rel="external">Visual Effect Graph</a>，下文简称VEG。<br>　　VEG的问题与近年来Unity新出的模块一样：有些功能就做了个壳没下文了，我需要的光照探针功能便是如此。尽管VEG在编辑器做了支持，但实际上功能是没实现的：<br><img src="https://musoucrow.github.io/images/veg/0.png" alt="0"><br>　　所幸Unity近年来的模块有个好处：<strong>开源</strong>，通过Package Manager下载的模块其本身已经是开源可修改的，若是对其进行一番研究搞不好就能自己实现想要的功能，不必再苦等官方？答案是没错的，我如愿以偿为VEG增加了三个功能，并将之<a href="https://github.com/MusouCrow/MyVFX" target="_blank" rel="external">开源</a>了。</p>
+<h2 id="研究"><a href="#研究" class="headerlink" title="研究"></a>研究</h2><p><img src="https://musoucrow.github.io/images/veg/1.png" alt="1"><br>　　根据上图可以发现，VEG特效的构成实际上就是Compute Shader + 一般Shader，它们是由VEG编辑器生成的，双击可查看生成后的代码。由此可见，VEG实际上与<a href="https://docs.unity3d.com/Packages/com.unity.shadergraph@7.1/manual/index.html" target="_blank" rel="external">Shader Graph</a>差不多，都是<strong>通过编辑器进行创作，最后生成相应的代码</strong>。<br>　　由于<a href="https://musoucrow.github.io/2020/03/08/shader_graph/">先前的经验</a>，这类源码的入手点自然是找到编辑器定义属性的地方。比如设置Shader效果的Output部分，顺藤摸瓜便很快找到了：<br><img src="https://musoucrow.github.io/images/veg/2.png" alt="2"><br><img src="https://musoucrow.github.io/images/veg/3.png" alt="3"><br>　　以此类推，便找到了生成Shader的相关处：<br><img src="https://musoucrow.github.io/images/veg/4.png" alt="4"><br><img src="https://musoucrow.github.io/images/veg/5.png" alt="5"><br><img src="https://musoucrow.github.io/images/veg/6.png" alt="6"><br>　　如此路线便打通了，以上得到了两个重要的信息：每个不同的Output类型（Quad、Cube、Mesh……）都会有对应的Shader模板，表示我们加料时也要考虑到多种类型的情况。其次是区分了<code>Legacy</code>与<code>Universal</code>两个文件夹，可见分别对应Built-in与URP管线，毕竟他们使用的Shader库并不相同。如此VEG能在老管线使用，并且在HDRP有新功能就能理解了。  </p>
+<h2 id="接受阴影"><a href="#接受阴影" class="headerlink" title="接受阴影"></a>接受阴影</h2><p>　　目前对于VEG最迫切需要的功能便是接受阴影了，无论实时阴影还是光照探针，VEG目前都是没有的。好在按照上文的路线通读一番后，发现追加接受阴影还是蛮容易的。<br>　　顺着上文继续走下去，看到了主Pass下有个名为<code>VFXApplyColor</code>的插入片段在各类型的主Pass都有用到，可见是通用的着色过程。那么在这里加入阴影着色正好：<br><img src="https://musoucrow.github.io/images/veg/7.png" alt="7"><br><img src="https://musoucrow.github.io/images/veg/8.png" alt="8"><br><img src="https://musoucrow.github.io/images/veg/9.png" alt="9"><br>　　通过搜索其他函数的出处找到了<code>Shaders/RenderPipeline/Universal/VFXCommon.hlsl</code>，到了这里便是熟悉的Shader编写环境了，Include的文件都是URP那套，写就完事了：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function">float4 <span class="title">VFXApplyShadow</span>(<span class="params">float4 color, float3 posWS</span>) </span>&#123;</div><div class="line">    float4 shadowCoord = TransformWorldToShadowCoord(posWS);</div><div class="line">    Light mainLight = GetMainLight(shadowCoord);</div><div class="line"></div><div class="line">    color.rgb *= mainLight.color * mainLight.distanceAttenuation * mainLight.shadowAttenuation;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> color;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>　　当然这函数还不能直接用，根据观察其他函数还会在<code>Shaders/VFXCommonOutput.hlsl</code>针对VEG的环境做一层封装然后写到<code>VFXApplyColor</code>里即可：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function">float4 <span class="title">VFXApplyShadow</span>(<span class="params">float4 color,VFX_VARYING_PS_INPUTS i</span>)</span></div><div class="line">&#123;</div><div class="line">    <span class="meta">#<span class="meta-keyword">if</span> USE_RECEIVE_SHADOWS</span></div><div class="line">        <span class="meta">#<span class="meta-keyword">if</span> defined(VFX_VARYING_POSWS)</span></div><div class="line">            <span class="keyword">return</span> VFXApplyShadow(color, i.VFX_VARYING_POSWS);</div><div class="line">        <span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">            <span class="keyword">return</span> VFXApplyShadow(color, (float3)<span class="number">0</span>); <span class="comment">//Some pipeline (LWRP) doesn't require WorldPos</span></div><div class="line">        <span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">    <span class="meta">#<span class="meta-keyword">else</span></span></div><div class="line">        <span class="keyword">return</span> color;</div><div class="line">    <span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="https://musoucrow.github.io/images/veg/10.png" alt="10"><br>　　当然还要提供阴影相关的<code>multi_compile</code>，搜索代码得知加在<code>VFXPassForwardAdditionalPragma</code>片段，然后就可以看效果啦：<br><img src="https://musoucrow.github.io/images/veg/11.png" alt="11"><br><img src="https://musoucrow.github.io/images/veg/12.gif" alt="12"></p>
+<h2 id="光照探针"><a href="#光照探针" class="headerlink" title="光照探针"></a>光照探针</h2><p>　　接受实时阴影算是完成了，但还要考虑到烘焙阴影的情况，于是对于光照探针的支持也要考虑到。VEG关于光照探针的外围支持已经完备（根据光照设置、探针设置开启相关KEYWORD），欠缺的只是Shader相关的部分。<br>　　在不考虑GI，按照我在模型渲染<a href="https://musoucrow.github.io/2020/08/02/lbbn_baked/">一样的做法</a>的前提下，只需要在<code>VFXApplyShadow</code>加点料即可：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function">float4 <span class="title">VFXApplyShadow</span>(<span class="params">float4 color, float3 posWS</span>) </span>&#123;</div><div class="line">    float4 shadowCoord = TransformWorldToShadowCoord(posWS);</div><div class="line">    Light mainLight = GetMainLight(shadowCoord);</div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(_MIXED_LIGHTING_SUBTRACTIVE)</span></div><div class="line">    mainLight.distanceAttenuation = lerp(GetMainLightShadowStrength(), <span class="number">1</span>, saturate(mainLight.distanceAttenuation));</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div><div class="line"></div><div class="line">    color.rgb *= mainLight.color * mainLight.distanceAttenuation * mainLight.shadowAttenuation;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> color;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>　　与之前的做法一样，<code>distanceAttenuation</code>在光照探针下会变成光照计算的着色值，将之锁定在<em>阴影强度-1</em>之间即可。然后烘焙阴影，设置特效组件开启光照探针即可看到效果了：<br><img src="https://musoucrow.github.io/images/veg/13.gif" alt="13"><br>　　比较遗憾的是，光照探针的计算是以GameObject为准的，而非以每个粒子为准，这也是没办法的事，只能尽量避免露馅了。<br>　　关于阴影还剩最后一个点没有做：在编辑器的开关设置，这个模仿其他属性添加变量，并在<code>VFXParticleOutput.cs</code>的<code>additionalDefines</code>变量里添加相关KEYWORD，最后在Shader里做判定即可：<br><img src="https://musoucrow.github.io/images/veg/14.png" alt="14"><br><img src="https://musoucrow.github.io/images/veg/15.png" alt="15">  </p>
+<h2 id="水面问题"><a href="#水面问题" class="headerlink" title="水面问题"></a>水面问题</h2><p>　　目前粒子特效在水面上显示会出现很明显的层次错误：<br><img src="https://musoucrow.github.io/images/veg/16.png" alt="16"><br>　　火焰实际上并没有进入水里，但是看着却变蓝了。这是因为<strong>水面的渲染时机在所有对象之后</strong>，并使用<code>CameraColorTexture</code>进行显示。而此时火焰已在Texture里了，于是与水重叠的部分便被水渲染处理了。<br>　　基于这个问题可以很迅速的想到解法：利用RenderFeature的RenderObjects可以新建渲染批次，并将粒子主Pass的<code>LightMode</code>改为新的批次即可：<br><img src="https://musoucrow.github.io/images/veg/17.png" alt="17"><br><img src="https://musoucrow.github.io/images/veg/18.png" alt="18"><br>　　试了下效果，问题的确解决了，但是……<br><img src="https://musoucrow.github.io/images/veg/19.png" alt="19"><br>　　但是水里的火焰消失了，这也是当然的，毕竟在水面渲染之前，火焰还没渲染呢。进一步思考后想到了个绝妙的方案：为粒子新增一个与主Pass一模一样的Pass，也就是目前的ParticlePost，保留原本的主Pass，将LightMode还原。当然只是如此的话会出现一个粒子渲染两次重叠起来的情况，而我们可以让ParticlePost只在与水面重叠时显示，这样便可解决重叠问题了。<br>　　为此我们要用上模板测试，让水面写入特定的模板值，然后在ParticlePost做判定（假设水面写入值为2）：<br><img src="https://musoucrow.github.io/images/veg/20.png" alt="20"><br>　　限于篇幅，关于添加Pass的做法还请自行查阅源码。看看效果吧：<br><img src="https://musoucrow.github.io/images/veg/21.png" alt="21"><br>　　很棒很棒，这下算是解决粒子与水面的问题了。尽管在水面时事实上是有重叠的，看着效果还行就凑合吧。由此延伸可以说是半透明对象与水面的一种解决方案了。<br>　　最后是编辑器相关，只能写死数值显然是不好的，这里我使用了VEG提供的定义代码段功能，在<code>VFXParticleOutput.cs</code>的<code>additionalReplacements</code>变量添加，并在模板里调用即可：<br><img src="https://musoucrow.github.io/images/veg/22.png" alt="22"><br><img src="https://musoucrow.github.io/images/veg/23.png" alt="23">  </p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　VEG较之传统粒子最大的优势便是运算放在GPU以及开放源码可供修改了吧，可惜必须在支持Compute Shader的设备上才能运作。这一点注定它在手游里很难用得上了，只能期待老手机早日淘汰了……</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　&lt;strong&gt;欢迎参与讨论，转载请注明出处。&lt;/strong&gt;     &lt;/p&gt;
+&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;　　&lt;a href=&quot;https://muso
+    
+    </summary>
+    
+      <category term="Teach" scheme="https://musoucrow.github.io/categories/Teach/"/>
+    
+    
+      <category term="Unity" scheme="https://musoucrow.github.io/tags/Unity/"/>
+    
+      <category term="Graphics" scheme="https://musoucrow.github.io/tags/Graphics/"/>
+    
+  </entry>
   
   <entry>
     <title>在URP实现水面效果</title>
@@ -847,42 +885,6 @@
       <category term="Development" scheme="https://musoucrow.github.io/tags/Development/"/>
     
       <category term="NetworkSync" scheme="https://musoucrow.github.io/tags/NetworkSync/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>《DFQ》开发随录——界面</title>
-    <link href="https://musoucrow.github.io/2018/10/29/dfq_ui/"/>
-    <id>https://musoucrow.github.io/2018/10/29/dfq_ui/</id>
-    <published>2018-10-29T13:02:54.000Z</published>
-    <updated>2020-05-10T14:06:52.490Z</updated>
-    
-    <content type="html"><![CDATA[<p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　在游戏开发的领域里，界面（User Interface）是不可或缺的，在一些强大的游戏引擎会为其配备一套解决方案。和之前的一系列问题一样，<a href="http://love2d.org" target="_blank" rel="external">LÖVE</a>自然是不会提供的，所以又得自己折腾一套了，本文便记录其中心得。</p>
-<h2 id="层级"><a href="#层级" class="headerlink" title="层级"></a>层级</h2><p>　　许多年前，因我年少没经验，写UI都是逐个显示对象并填写参数的。捞的嘛就不谈了，所以也就深刻意识到面向对象以及建立层级体系的重要性。所谓层级体系，也就是将显示对象之间根据需求建立起上下级关系，下级的显示数据会基于上级（如上级移动了坐标，下级也会随之改变），这种玩意在<a href="https://www.cocos.com" target="_blank" rel="external">Cocos</a>我称之为<strong>Layer-Node体系</strong>（如下图所示），在<a href="https://unity3d.com" target="_blank" rel="external">Unity</a>则是以<a href="https://docs.unity3d.com/ScriptReference/Transform.html" target="_blank" rel="external">Transform组件</a>实现。欣慰的是，在LÖVE11.0也追加了<a href="http://love2d.org/wiki/Transform" target="_blank" rel="external">Transform</a>，同时不幸的是，我用的是旧版本，所以最终是自己造了一遍轮子:(<br><img src="https://musoucrow.github.io/images/dfq_ui/layer.jpeg" alt="layer"></p>
-<p>　　在设计上我首先实现了集显示与层级管理于一体的对象——Renderer，不过在实现上有点用力过猛，把Shader的层级管理也做了（下级的Shader会与上级的合并）。完成了这个核心之后，再分别设计基本的显示元素（Sprite、Animation、Particle、Label、Layer），不过我并没有另它们继承Renderer，而是设计了一个基类，并将Renderer作为成员对象存在，主要是Renderer的信息量过大，实是不宜直接继承了。结构如下图所示:<br><img src="https://musoucrow.github.io/images/dfq_ui/uml.png" alt="uml"></p>
-<h2 id="焦点"><a href="#焦点" class="headerlink" title="焦点"></a>焦点</h2><p>　　要说UI对象与一般的显示对象最大的不同之处，那便是会接收来自玩家的触控输入了，尤其是作为手机游戏，会同时受到多个触控。再涉及到图层等问题后，便有必要建立一个焦点管理体系了。首先UI对象需要提供判定触控，以及按下、持续、弹起的接口。然后在UIManager提供接收触控输入、焦点管理、对象运行的服务。流程如下图所示:<br><img src="https://musoucrow.github.io/images/dfq_ui/focus.png" alt="focus"></p>
-<p>　　至于“判定触控所在坐标是否有符合条件的对象”这一需求的实现，便与上文提到的层级体系相得益彰了:显示顺序为从尾到头，而判定自然也是从最顶部的显示对象开始的，于是乎只要将Layer的成员从尾到头遍历判定即可。至于不想参与判定的对象会设置专门属性跳过。</p>
-<h2 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h2><p>　　这个便是老生常谈的设计模式了，去年我也对此作了<a href="https://musoucrow.github.io/2017/06/16/mvc_thinking/">一篇文章</a>。简要来说便是，UI对象只负责接收输入（Controller）以展示结果（View），UI对象所保存的数据为展示而服务，真正的数据保存在来源对象（Model）。示例如下图所示（这里的Event按照C#的Event去理解即可）:<br><img src="https://musoucrow.github.io/images/dfq_ui/mvc.png" alt="mvc"></p>
-<p>　　当然以上只是个人的理解，在我看来Controller即Model与View的桥梁，只要符合这个性质的存在即为Controller，它不一定是个固定的形式。包括按钮的按下处理函数这样的存在只要是由外部传入的，那么它也算是Controller。</p>
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>　　都8012年了，自然不可能以手写代码的形式创建UI布局，配置化自然是理所当然的:<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">return</span> &#123;</div><div class="line">    name = <span class="string">"mapName"</span>,</div><div class="line">    script = <span class="string">"advanced/mapName"</span>,</div><div class="line">    x = <span class="number">1100</span>,</div><div class="line">    y = <span class="number">-30</span>,</div><div class="line">    subject = &#123;</div><div class="line">        &#123;</div><div class="line">            name = <span class="string">"bottom"</span>,</div><div class="line">            script = <span class="string">"sprite"</span>,</div><div class="line">            sprite = <span class="string">"mapName"</span></div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">            name = <span class="string">"label"</span>,</div><div class="line">            script = <span class="string">"label"</span>,</div><div class="line">            font = <span class="string">"normal/18"</span>,</div><div class="line">            color = &#123;</div><div class="line">                red = <span class="number">241</span>,</div><div class="line">                green = <span class="number">218</span>,</div><div class="line">                blue = <span class="number">157</span>,</div><div class="line">                alpha = <span class="number">255</span></div><div class="line">            &#125;,</div><div class="line">            x = <span class="number">90</span>,</div><div class="line">            y = <span class="number">42</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>　　通过这般类似HTML的方式进行编写配置文件，交给专门的创建函数处理即可，具体的数据处理方式则交由对应的类（script）处理。若是开发了相应的UI编辑器还可以直接制作生成配置，很显然这里也是契合了层级体系，可见其重要性。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　目前这套界面体系还缺乏相应的编辑器以及没有自适应布局的功能，不过实际上我也不太需要这些。只能说面向内部与面向公众的要求级别是不一样的，所以这并不能代表通用UI库的设计思想，仅供参考而已。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;　　&lt;strong&gt;欢迎参与讨论，转载请注明出处。&lt;/strong&gt;      &lt;/p&gt;
-&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;　　在游戏开发的领域里，界面（User In
-    
-    </summary>
-    
-      <category term="Development" scheme="https://musoucrow.github.io/categories/Development/"/>
-    
-    
-      <category term="Development" scheme="https://musoucrow.github.io/tags/Development/"/>
-    
-      <category term="DFQ" scheme="https://musoucrow.github.io/tags/DFQ/"/>
     
   </entry>
   

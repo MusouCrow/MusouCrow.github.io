@@ -291,6 +291,180 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2017/04/21/caller/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/21/caller/" itemprop="url">
+                  观察者模式的一种实现——Caller
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-21T16:55:56+08:00">
+                2017-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ProgramDesign/" itemprop="url" rel="index">
+                    <span itemprop="name">ProgramDesign</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/21/caller/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/04/21/caller/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/04/21/caller/" class="leancloud_visitors" data-flag-title="观察者模式的一种实现——Caller">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　在程序设计的时候，观察者模式是一种应用广泛的设计模式，它是一种模块间的通信方式，对于程序的解耦性有所帮助。本文便提供了一种实现思路，也即是说，你需要<strong>先去了解观察者模式</strong>才方便阅读本文。<br>　　以下代码演示将使用Lua语言，接下来的内容对阅读者的Lua水平有一定的要求。如果你不知道在Lua中class的实现方式，可参考<a href="http://blog.codingnow.com/2006/06/oo_lua.html" target="_blank" rel="external">这篇文章</a>。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>　　首先构造Caller的结构关系，如图所示：<img src="https://musoucrow.github.io/images/caller/relationship.png" alt="relationship"></p>
+<p>　　由此可见，Caller包含一个结构体——Listener。接下来是代码实现：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- Caller.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> Class = <span class="built_in">require</span>(<span class="string">"class"</span>)</div><div class="line"><span class="keyword">local</span> Caller = Class()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Caller:Ctor</span><span class="params">()</span></span></div><div class="line">	self.listenerList = &#123;&#125;</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Caller:AddListener</span><span class="params">(obj, func)</span></span></div><div class="line">	<span class="built_in">table</span>.insert(self.listenerList, &#123;obj = obj, func = func&#125;) <span class="comment">-- Create Listener.</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Caller:DelListener</span><span class="params">(obj, func)</span></span></div><div class="line">	<span class="keyword">for</span> n=#self.listenerList, <span class="number">1</span>, <span class="number">-1</span> <span class="keyword">do</span></div><div class="line">		<span class="keyword">if</span> (self.listenerList[n].obj == obj <span class="keyword">and</span> self.listenerList[n].func == func) <span class="keyword">then</span></div><div class="line">			<span class="built_in">table</span>.remove(self.listenerList, n)</div><div class="line">			</div><div class="line">			<span class="keyword">return</span> <span class="keyword">true</span></div><div class="line">		<span class="keyword">end</span></div><div class="line">	<span class="keyword">end</span></div><div class="line">	</div><div class="line">	<span class="keyword">return</span> <span class="keyword">false</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Caller:Call</span><span class="params">(...)</span></span></div><div class="line">	<span class="keyword">for</span> n=<span class="number">1</span>, #self.listenerList <span class="keyword">do</span></div><div class="line">		self.listenerList[n].func(self.listenerList[n].obj, ...)</div><div class="line">	<span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> Caller</div></pre></td></tr></table></figure>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- A.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> Class = <span class="built_in">require</span>(<span class="string">"class"</span>)</div><div class="line"><span class="keyword">local</span> Caller = <span class="built_in">require</span>(<span class="string">"caller"</span>)</div><div class="line"><span class="keyword">local</span> B = <span class="built_in">require</span>(<span class="string">"b"</span>)</div><div class="line"><span class="keyword">local</span> A = Class()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A:Ctor</span><span class="params">()</span></span></div><div class="line">	self.caller = Caller.New()</div><div class="line">	self.b = B.New(self.caller)</div><div class="line">	self.value = <span class="number">0</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A:SetValue</span><span class="params">(value)</span></span></div><div class="line">	self.value = value</div><div class="line">	self.caller:Call(value)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> A</div></pre></td></tr></table></figure>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- B.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> Class = <span class="built_in">require</span>(<span class="string">"class"</span>)</div><div class="line"><span class="keyword">local</span> B = Class()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">B:Ctor</span><span class="params">(caller)</span></span></div><div class="line">	caller:AddListener(self, self.Print)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">B:Print</span><span class="params">(...)</span></span></div><div class="line">	<span class="built_in">print</span>(...)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> B</div></pre></td></tr></table></figure>
+<p>　　如上所示，在调用A:SetValue(value)时会连带调用B:Print(…)，如此只需要通过操作Caller就能达到不同对象之间通信的效果。并且也无须将业务写死在A:SetValue(value)中，业务将集中存放在Caller中。</p>
+<h2 id="疑难解答"><a href="#疑难解答" class="headerlink" title="疑难解答"></a>疑难解答</h2><p>　　问：Caller的缺点是什么？<br>　　答：Caller的缺点的很明显，需要将Caller对象直传到其他模块处，这样并不是很安全（别处也可以做Caller的一切行为）。当然这个问题也很好解决，只需要采用<a href="https://musoucrow.github.io/2017/04/19/event_mechanism/">Event机制</a>对其进行封装即可。代码如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- A.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> Class = <span class="built_in">require</span>(<span class="string">"class"</span>)</div><div class="line"><span class="keyword">local</span> Caller = <span class="built_in">require</span>(<span class="string">"caller"</span>)</div><div class="line"><span class="keyword">local</span> B = <span class="built_in">require</span>(<span class="string">"b"</span>)</div><div class="line"><span class="keyword">local</span> A = Class()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A:Ctor</span><span class="params">()</span></span></div><div class="line">	self.event = <span class="function"><span class="keyword">function</span><span class="params">(...)</span></span> self:OnEvent(...) <span class="keyword">end</span></div><div class="line">	self.caller = Caller.New()</div><div class="line">	self.b = B.New()</div><div class="line">	self.value = <span class="number">0</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A:SetValue</span><span class="params">(value)</span></span></div><div class="line">	self.value = value</div><div class="line">	self.caller:Call(value)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A:OnEvent</span><span class="params">(type, ...)</span></span></div><div class="line">	<span class="keyword">if</span> (<span class="built_in">type</span> == <span class="string">"AddListener"</span>) <span class="keyword">then</span></div><div class="line">		<span class="keyword">return</span> self.caller:AddListener(...)</div><div class="line">	<span class="keyword">end</span></div><div class="line">	</div><div class="line">	<span class="keyword">return</span> <span class="string">"No Event"</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> A</div></pre></td></tr></table></figure>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- B.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> Class = <span class="built_in">require</span>(<span class="string">"class"</span>)</div><div class="line"><span class="keyword">local</span> B = Class()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">B:Ctor</span><span class="params">(upperEvent)</span></span></div><div class="line">	upperEvent(<span class="string">"AddListener"</span>, self, self.Print)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">B:Print</span><span class="params">(...)</span></span></div><div class="line">	<span class="built_in">print</span>(...)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> B</div></pre></td></tr></table></figure>
+<p>　　问：Caller在功能上有何可改进之处？<br>　　答：在实际开发中，Caller的需求数量一般不止一个，届时可以考虑用List或Map对Caller进行管理。也可以考虑直接让Caller具备管理多个ListenerList，代码如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- Caller.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> Class = <span class="built_in">require</span>(<span class="string">"class"</span>)</div><div class="line"><span class="keyword">local</span> Caller = Class()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Caller:Ctor</span><span class="params">()</span></span></div><div class="line">	self.listenerListMap = &#123;&#125;</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Caller:AddListener</span><span class="params">(type, obj, func)</span></span></div><div class="line">	<span class="keyword">if</span> (<span class="keyword">not</span> self.listenerListMap[<span class="built_in">type</span>]) <span class="keyword">then</span></div><div class="line">		self.listenerListMap[<span class="built_in">type</span>] = &#123;&#125;</div><div class="line">	<span class="keyword">end</span></div><div class="line">	</div><div class="line">	<span class="built_in">table</span>.insert(self.listenerListMap[<span class="built_in">type</span>], &#123;obj = obj, func = func&#125;) <span class="comment">-- Create Listener.</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Caller:DelListener</span><span class="params">(type, obj, func)</span></span></div><div class="line">	<span class="keyword">if</span> (<span class="keyword">not</span> self.listenerListMap[<span class="built_in">type</span>]) <span class="keyword">then</span></div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span></div><div class="line">	<span class="keyword">end</span></div><div class="line">	</div><div class="line">	<span class="keyword">local</span> listenerList = self.listenerListMap[<span class="built_in">type</span>]</div><div class="line">	</div><div class="line">	<span class="keyword">for</span> n=#listenerList, <span class="number">1</span>, <span class="number">-1</span> <span class="keyword">do</span></div><div class="line">		<span class="keyword">if</span> (listenerList[n].func == func <span class="keyword">and</span> listenerList[n].obj == obj) <span class="keyword">then</span></div><div class="line">			<span class="built_in">table</span>.remove(listenerList, n)</div><div class="line">			</div><div class="line">			<span class="keyword">return</span> <span class="keyword">true</span></div><div class="line">		<span class="keyword">end</span></div><div class="line">	<span class="keyword">end</span></div><div class="line">	</div><div class="line">	<span class="keyword">return</span> <span class="keyword">false</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Caller:Call</span><span class="params">(type, ...)</span></span></div><div class="line">	<span class="keyword">if</span> (<span class="keyword">not</span> self.listenerListMap[<span class="built_in">type</span>]) <span class="keyword">then</span></div><div class="line">		<span class="keyword">return</span></div><div class="line">	<span class="keyword">end</span></div><div class="line">	</div><div class="line">	<span class="keyword">local</span> listenerList = self.listenerListMap[<span class="built_in">type</span>]</div><div class="line">	</div><div class="line">	<span class="keyword">for</span> n=#listenerList, <span class="number">1</span>, <span class="number">-1</span> <span class="keyword">do</span></div><div class="line">		listenerList[n].func(listenerList[n].obj, ...)</div><div class="line">	<span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> Caller</div></pre></td></tr></table></figure>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　以上内容仅为提供一个思路，它或许并非最完善的，也不一定能适用于所有编程语言中，对此有所心得者，欢迎前来探讨，提供更佳的思路。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2017/04/19/event_mechanism/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1534,7 +1708,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-count">46</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

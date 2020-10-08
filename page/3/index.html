@@ -291,6 +291,177 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/10/29/dfq_ui/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/10/29/dfq_ui/" itemprop="url">
+                  《DFQ》开发随录——界面
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-29T21:02:54+08:00">
+                2018-10-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Development/" itemprop="url" rel="index">
+                    <span itemprop="name">Development</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/29/dfq_ui/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/10/29/dfq_ui/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/10/29/dfq_ui/" class="leancloud_visitors" data-flag-title="《DFQ》开发随录——界面">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　在游戏开发的领域里，界面（User Interface）是不可或缺的，在一些强大的游戏引擎会为其配备一套解决方案。和之前的一系列问题一样，<a href="http://love2d.org" target="_blank" rel="external">LÖVE</a>自然是不会提供的，所以又得自己折腾一套了，本文便记录其中心得。</p>
+<h2 id="层级"><a href="#层级" class="headerlink" title="层级"></a>层级</h2><p>　　许多年前，因我年少没经验，写UI都是逐个显示对象并填写参数的。捞的嘛就不谈了，所以也就深刻意识到面向对象以及建立层级体系的重要性。所谓层级体系，也就是将显示对象之间根据需求建立起上下级关系，下级的显示数据会基于上级（如上级移动了坐标，下级也会随之改变），这种玩意在<a href="https://www.cocos.com" target="_blank" rel="external">Cocos</a>我称之为<strong>Layer-Node体系</strong>（如下图所示），在<a href="https://unity3d.com" target="_blank" rel="external">Unity</a>则是以<a href="https://docs.unity3d.com/ScriptReference/Transform.html" target="_blank" rel="external">Transform组件</a>实现。欣慰的是，在LÖVE11.0也追加了<a href="http://love2d.org/wiki/Transform" target="_blank" rel="external">Transform</a>，同时不幸的是，我用的是旧版本，所以最终是自己造了一遍轮子:(<br><img src="https://musoucrow.github.io/images/dfq_ui/layer.jpeg" alt="layer"></p>
+<p>　　在设计上我首先实现了集显示与层级管理于一体的对象——Renderer，不过在实现上有点用力过猛，把Shader的层级管理也做了（下级的Shader会与上级的合并）。完成了这个核心之后，再分别设计基本的显示元素（Sprite、Animation、Particle、Label、Layer），不过我并没有另它们继承Renderer，而是设计了一个基类，并将Renderer作为成员对象存在，主要是Renderer的信息量过大，实是不宜直接继承了。结构如下图所示:<br><img src="https://musoucrow.github.io/images/dfq_ui/uml.png" alt="uml"></p>
+<h2 id="焦点"><a href="#焦点" class="headerlink" title="焦点"></a>焦点</h2><p>　　要说UI对象与一般的显示对象最大的不同之处，那便是会接收来自玩家的触控输入了，尤其是作为手机游戏，会同时受到多个触控。再涉及到图层等问题后，便有必要建立一个焦点管理体系了。首先UI对象需要提供判定触控，以及按下、持续、弹起的接口。然后在UIManager提供接收触控输入、焦点管理、对象运行的服务。流程如下图所示:<br><img src="https://musoucrow.github.io/images/dfq_ui/focus.png" alt="focus"></p>
+<p>　　至于“判定触控所在坐标是否有符合条件的对象”这一需求的实现，便与上文提到的层级体系相得益彰了:显示顺序为从尾到头，而判定自然也是从最顶部的显示对象开始的，于是乎只要将Layer的成员从尾到头遍历判定即可。至于不想参与判定的对象会设置专门属性跳过。</p>
+<h2 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h2><p>　　这个便是老生常谈的设计模式了，去年我也对此作了<a href="https://musoucrow.github.io/2017/06/16/mvc_thinking/">一篇文章</a>。简要来说便是，UI对象只负责接收输入（Controller）以展示结果（View），UI对象所保存的数据为展示而服务，真正的数据保存在来源对象（Model）。示例如下图所示（这里的Event按照C#的Event去理解即可）:<br><img src="https://musoucrow.github.io/images/dfq_ui/mvc.png" alt="mvc"></p>
+<p>　　当然以上只是个人的理解，在我看来Controller即Model与View的桥梁，只要符合这个性质的存在即为Controller，它不一定是个固定的形式。包括按钮的按下处理函数这样的存在只要是由外部传入的，那么它也算是Controller。</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>　　都8012年了，自然不可能以手写代码的形式创建UI布局，配置化自然是理所当然的:<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">return</span> &#123;</div><div class="line">    name = <span class="string">"mapName"</span>,</div><div class="line">    script = <span class="string">"advanced/mapName"</span>,</div><div class="line">    x = <span class="number">1100</span>,</div><div class="line">    y = <span class="number">-30</span>,</div><div class="line">    subject = &#123;</div><div class="line">        &#123;</div><div class="line">            name = <span class="string">"bottom"</span>,</div><div class="line">            script = <span class="string">"sprite"</span>,</div><div class="line">            sprite = <span class="string">"mapName"</span></div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">            name = <span class="string">"label"</span>,</div><div class="line">            script = <span class="string">"label"</span>,</div><div class="line">            font = <span class="string">"normal/18"</span>,</div><div class="line">            color = &#123;</div><div class="line">                red = <span class="number">241</span>,</div><div class="line">                green = <span class="number">218</span>,</div><div class="line">                blue = <span class="number">157</span>,</div><div class="line">                alpha = <span class="number">255</span></div><div class="line">            &#125;,</div><div class="line">            x = <span class="number">90</span>,</div><div class="line">            y = <span class="number">42</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　通过这般类似HTML的方式进行编写配置文件，交给专门的创建函数处理即可，具体的数据处理方式则交由对应的类（script）处理。若是开发了相应的UI编辑器还可以直接制作生成配置，很显然这里也是契合了层级体系，可见其重要性。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　目前这套界面体系还缺乏相应的编辑器以及没有自适应布局的功能，不过实际上我也不太需要这些。只能说面向内部与面向公众的要求级别是不一样的，所以这并不能代表通用UI库的设计思想，仅供参考而已。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/08/24/build_love_android/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1941,176 +2112,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/02/18/weak_event_csharp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Musoucrow">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Musoucrow' BLOG">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/02/18/weak_event_csharp/" itemprop="url">
-                  C#之弱事件（Weak Event）的实现
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-18T20:50:12+08:00">
-                2018-02-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ProgramDesign/" itemprop="url" rel="index">
-                    <span itemprop="name">ProgramDesign</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/18/weak_event_csharp/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/18/weak_event_csharp/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/18/weak_event_csharp/" class="leancloud_visitors" data-flag-title="C#之弱事件（Weak Event）的实现">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors </span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　最近使用C#开发项目时，发现一个会导致内存泄漏的陷阱——<a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/language-reference/keywords/event" target="_blank" rel="external">event</a>里的成员并非<a href="https://docs.microsoft.com/zh-cn/dotnet/standard/garbage-collection/weak-references" target="_blank" rel="external">弱引用</a>，这样便会导致与event相关联的对象都不会被回收，从而导致内存泄漏。如此便很有必要实现一款弱事件（Weak Event）以解决此问题。</p>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>　　首先当然是找找是否存在现成的方案，<a href="https://docs.microsoft.com/zh-cn/dotnet/framework/wpf/advanced/weak-event-patterns" target="_blank" rel="external">答案是有的</a>，不过很奇怪的是，该解决方案隶属于WPF，那么便没戏了。从网上来看也有不少各自的实现，不过个人对此都不算太满意，于是便打算自己造个轮子。<br>　　实现弱事件自然需要用到弱引用，而弱引用的具体实现则是<a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.weakreference?view=netframework-4.7.1" target="_blank" rel="external">WeakReference</a>，可以根据<a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.delegate?view=netframework-4.7.1" target="_blank" rel="external">Delegate</a>提供的Target作为弱引用对象，Method作为调用。<br>　　剩下的问题便是Delegate的参数问题了，很可惜Delegate似乎不支持作为泛型，但是Delegate的参数还是<a href="https://docs.microsoft.com/zh-cn/dotnet/csharp/programming-guide/generics/generic-delegates" target="_blank" rel="external">支持</a>的。但即便是支持，也不方便作为多个参数来进行了。那么只能选择继承<a href="https://docs.microsoft.com/zh-cn/dotnet/api/system.eventargs?view=netframework-4.7.1" target="_blank" rel="external">EventArgs</a>了，EventArgs本身是个空类，一般做法是继承它然后自定义，这也是微软官方所推荐的做法。</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line">using System;</div><div class="line">using System.Reflection;</div><div class="line">using System.Collections.Generic;</div><div class="line"></div><div class="line">public class WeakEvent&lt;TEventArgs&gt; where TEventArgs : EventArgs &#123;</div><div class="line">    public delegate void Func(TEventArgs e);</div><div class="line">    private static object[] ARGS = new object[1];</div><div class="line"></div><div class="line">    private class Unit &#123;</div><div class="line">        private WeakReference reference;</div><div class="line">        private MethodInfo method;</div><div class="line">        private bool isStatic;</div><div class="line"></div><div class="line">        public bool IsDead &#123;</div><div class="line">            get &#123;</div><div class="line">                return !this.isStatic &amp;&amp; !this.reference.IsAlive;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public Unit(Func callback) &#123;</div><div class="line">            this.isStatic = callback.Target == null;</div><div class="line">            this.reference = new WeakReference(callback.Target);</div><div class="line">            this.method = callback.Method;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public bool Equals(Func callback) &#123;</div><div class="line">            return this.reference.Target == callback.Target &amp;&amp; this.method == callback.Method;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public void Invoke(object[] args) &#123;</div><div class="line">            this.method.Invoke(this.reference.Target, args);</div><div class="line">        &#125;</div><div class="line">    &#125;    </div><div class="line"></div><div class="line">    private List&lt;Unit&gt; list = new List&lt;Unit&gt;();</div><div class="line"></div><div class="line">    public int Count &#123;</div><div class="line">        get &#123;</div><div class="line">            return this.list.Count;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void Add(Func callback) &#123;</div><div class="line">        this.list.Add(new Unit(callback));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void Remove(Func callback) &#123;</div><div class="line">        for (int i = this.list.Count - 1; i &gt; -1; i--) &#123;</div><div class="line">            if (this.list[i].Equals(callback)) &#123;</div><div class="line">                this.list.RemoveAt(i);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void Invoke(TEventArgs args=null) &#123;</div><div class="line">        ARGS[0] = args;</div><div class="line"></div><div class="line">        for (int i = this.list.Count - 1; i &gt; -1; i--) &#123;</div><div class="line">            if (this.list[i].IsDead) &#123;</div><div class="line">                this.list.RemoveAt(i);</div><div class="line">            &#125;</div><div class="line">            else &#123;</div><div class="line">                this.list[i].Invoke(ARGS);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void Clear() &#123;</div><div class="line">        this.list.Clear();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>　　以上便是弱事件的实现代码了，其实原理与<a href="https://musoucrow.github.io/2017/04/21/caller/">Caller</a>基本一致。接下来是演示：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">using</span> System;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Obj</span> &#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Do</span>(<span class="params">EventArgs e</span>) </span>&#123;</div><div class="line">        Console.WriteLine(<span class="string">"test"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">StaticDo</span>(<span class="params">EventArgs e</span>) </span>&#123;</div><div class="line">        Console.WriteLine(<span class="string">"static"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> a = <span class="keyword">new</span> Obj();</div><div class="line">        <span class="keyword">var</span> b = <span class="keyword">new</span> Obj();</div><div class="line">        <span class="keyword">var</span> weakEvent = <span class="keyword">new</span> WeakEvent&lt;EventArgs&gt;();</div><div class="line">        </div><div class="line">        weakEvent.Add(a.Do);</div><div class="line">        weakEvent.Add(b.Do);</div><div class="line">        weakEvent.Add(StaticDo);</div><div class="line">        weakEvent.Add((EventArgs e) =&gt; Console.WriteLine(<span class="string">"lambda"</span>));</div><div class="line"></div><div class="line">        a = <span class="literal">null</span>;</div><div class="line">        weakEvent.Remove(StaticDo);</div><div class="line">        GC.Collect();</div><div class="line"></div><div class="line">        weakEvent.Invoke();</div><div class="line">        Console.WriteLine(weakEvent.Count);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>　　输出结果为：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">lambda</div><div class="line"><span class="built_in">test</span></div><div class="line">2</div></pre></td></tr></table></figure>
-<p>　　以上分别演示了静态方法、实例方法、匿名方法，其中静态方法和匿名方法需要手动调用Remove将之移除，如演示一般那样匿名方法便无从回收了，这点需要注意。如此弱事件便完成了，当然它带来了一定的性能损耗，这是无可避免的。也并未经过长久实践的磨砺，可以说只是一个原型罢了。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　类似这样的内存泄漏问题在开发过程中可有不少，尤其是有了GC的庇护下对此更为麻痹。一般需要定期使用专业工具进行检测，这也是优化的一环啊。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2160,7 +2161,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-count">46</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
