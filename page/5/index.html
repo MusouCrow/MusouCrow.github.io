@@ -291,6 +291,173 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2017/05/01/png_stroke_problem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/05/01/png_stroke_problem/" itemprop="url">
+                  关于像素PNG图片在游戏引擎缩放后出现毛边的解决方案
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-01T06:35:55+08:00">
+                2017-05-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Teach/" itemprop="url" rel="index">
+                    <span itemprop="name">Teach</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/01/png_stroke_problem/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/05/01/png_stroke_problem/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/05/01/png_stroke_problem/" class="leancloud_visitors" data-flag-title="关于像素PNG图片在游戏引擎缩放后出现毛边的解决方案">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong></p>
+<p>　　今日遇到了一个很值得记录的问题：对于像素PNG图片在游戏引擎里缩放后，便会在图片边缘出现很奇怪的毛边。类似这样：<img src="https://musoucrow.github.io/images/png_stroke_problem/1.png" alt="1">  </p>
+<p>　　经过研究发现，似乎与文件格式无关。我还尝试将不会出现毛边的像素图混搭一块，结果反而导致靠近毛边的地方会被感染：<img src="https://musoucrow.github.io/images/png_stroke_problem/2.png" alt="2"></p>
+<p>　　当然这个问题在Unity下是可以通过设置解决的：<img src="https://musoucrow.github.io/images/png_stroke_problem/3.png" alt="3"></p>
+<p>　　不过并非所有游戏引擎都能这么做的，所以还需要从文件根本上解决。经过一段无心插柳的尝试，发现解决方案为使用PS的文件→存储为Web所用格式：<img src="https://musoucrow.github.io/images/png_stroke_problem/4.png" alt="4"></p>
+<p>　　关键便在于将杂边设置为“无”，保存后再拿去测试，问题解决：<img src="https://musoucrow.github.io/images/png_stroke_problem/5.png" alt="5"></p>
+<p>　　虽然到头来具体的原理还是没有弄明白，但好歹也算是解决了。如果有人明白具体原理，还请不吝赐教。至于这么做是否有损尚未可知，但从肉眼来看是不成问题的。以及这个问题目前只发现出现在像素图上，带半透明的特效图并无此问题。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2017/04/21/caller/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1708,7 +1875,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">47</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

@@ -291,6 +291,201 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2020/01/12/light_guide/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2020/01/12/light_guide/" itemprop="url">
+                  Unity光照模式的总结
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-12T21:01:33+08:00">
+                2020-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Teach/" itemprop="url" rel="index">
+                    <span itemprop="name">Teach</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/01/12/light_guide/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/01/12/light_guide/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2020/01/12/light_guide/" class="leancloud_visitors" data-flag-title="Unity光照模式的总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　近日在琢磨Demo应该选择怎样的光照模式，遂做了个试验：对比在同一场合下，各种模式的情况。故以此文记录之（版本为2019.2、平台为Standalone、渲染管线为Builtin）。</p>
+<h2 id="环境光"><a href="#环境光" class="headerlink" title="环境光"></a>环境光</h2><p>　　环境光(Ambient)严格来说并不是一种光照，它只是单纯的为所有显示元素上色罢了。可以理解为2D游戏便是有个(255, 255, 255)环境光。可于<strong>(Window → Rendering → Lighting Settings)</strong>下的Environment Lighting进行设置。<br><img src="https://musoucrow.github.io/images/light_guide/0.png" alt="0"><br>　　环境光是无论如何都需要的，一般用于决定画面的底色。下图便是用了白色的效果：<br><img src="https://musoucrow.github.io/images/light_guide/1.png" alt="1"><br>　　看到上图便能理解我说的「环境光严格来说并不是一种光照」，毕竟连影子都没有，整个画面显得很单薄。但事实上在早期、以及现在一些不依赖光影的游戏是有这种做法的。它们一般会采用类似2D游戏的做法，在素材层面解决各种显示效果问题。对于不依赖光影、强调美术的绝对控制的游戏，使用纯环境光是个方案。<br>　　顺带一提，在Environment Lighting设置下的Gradient与Skybox模式有着不一样的效果，属于更高级的环境光实现。</p>
+<h2 id="实时光"><a href="#实时光" class="headerlink" title="实时光"></a>实时光</h2><p>　　实时光(Realtime)顾名思义，就是每时每刻都在进行的光照。在<strong>Light组件的Mode属性设置为Realtime</strong>即是。实时光的优缺点很明显，如下：</p>
+<ul>
+<li>优点<ul>
+<li>游戏时可随时改变光照的状态，即刻产生反应</li>
+<li>随取随用，无需烘焙</li>
+<li>光照效果最好</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>在正向渲染(Forward Rendering)下，画面同时出现多个光照时，开销较大</li>
+<li>为了节能，某些设备、设置下，光照的数量有限</li>
+</ul>
+</li>
+</ul>
+<p>　　实时光一般就是开箱即用到的光照，效果如下：<br><img src="https://musoucrow.github.io/images/light_guide/2.png" alt="2"><br>　　可以看得出，各项消耗指标都比纯环境光要高，而该场景只有三项光照（平行光1个、聚光灯2个）。故一般游戏都不会如此奢侈，会采用各种手段来达到相同的效果。<br>　　而以上却还不是效果的极致，还差个全局光照(Global Illumination)呢。刚才所见的光照只是「直接的光照」罢了，它只会考虑到照到了谁便处理谁，没有从全局的角度去考虑。在开启全局光照后，除了直接光照之外，还会产生物件之间相互反射的<strong>间接光照</strong>。效果如下：<br><img src="https://musoucrow.github.io/images/light_guide/3.png" alt="3"><br>　　从画面效果来看变得更为深邃了，墙壁与地板都有了反射后的光渍，而各项指标实际上与局部并无不同（疑似）。使用它的前提是要在上文的Lighting Settings下开启<em>Realtime Global Illumination</em>，并且为静态物件做好<em>Static标记</em>。具体实现细节请自行查阅官方文档，在此不表。<br>　　当然，这并不代表全局光照优于局部光照，就比如有些游戏的画面风格并不喜欢那些全局光照带来的光渍。还是要看想要怎样的美术效果。</p>
+<h2 id="烘焙光"><a href="#烘焙光" class="headerlink" title="烘焙光"></a>烘焙光</h2><p>　　烘焙光(Baked)可谓实时光的反面：根据光照信息预先渲染成贴图，最后盖到场景上。这个「根据光照信息预先渲染成贴图」的过程，是为<strong>烘焙</strong>。而烘焙的类型、算法、设置有着多样化的选择，直接影响烘焙的时长、效果、贴图大小与数量。也因烘焙的特性，只适用于静态物件（标记为Static的对象）。优缺点如下：</p>
+<ul>
+<li>优点<ul>
+<li>部分渲染元素（取决于烘焙类型）没有实时运行的开销</li>
+<li>属于全局光照，拥有间接光</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>光照属性不能运行时修改</li>
+<li>动态物件不受影响</li>
+<li>烘焙耗时</li>
+</ul>
+</li>
+</ul>
+<p>　　烘焙类型主要分三种，效果如下：<br><img src="https://musoucrow.github.io/images/light_guide/4.png" alt="4">Subtractive: 全烘焙<br><img src="https://musoucrow.github.io/images/light_guide/5.png" alt="5">Shadowmask: 烘焙阴影与间接光<br><img src="https://musoucrow.github.io/images/light_guide/6.png" alt="6">Backed Indirect: 只烘焙间接光  </p>
+<p>　　可以看到效果是一个比一个好，但性能却是一个比一个耗。并且可以看出，由于烘焙设置的问题，效果是不如实时光的。而通过设置达到最优的话，烘焙时长则又是个问题了，鱼和熊掌不可兼得啊（砸钱便能我全都要）。<br>　　对于Subtractive，只需把Light组件的Mode属性设置为<strong>Baked</strong>即可。对于其余两种，实际上是一种实时光+烘焙光的混合方案，则需设置为<strong>Mixed</strong>。由于动态对象不受烘焙光影响的特性，Subtractive下的胶囊仔直接跟纯环境光时一个样了。解决方案有很多种，如采用Mixed方案（静态物件烘焙光、动态物件实时光）、<a href="https://docs.unity3d.com/Manual/LightProbes.html" target="_blank" rel="external">Light Probes</a>等。<br>　　顺带一提，关于Shadowmask，在阴影设置中可调为<strong>Distance Shadowmask</strong>。如此将取决于阴影距离的设置，在阴影距离内的阴影，将采用实时阴影，距离之外的则是烘焙阴影。也算是一种提升品质的方式吧。<br>　　烘焙光在业界的应用相当广泛，其中Subtractive式烘焙在早期游戏与现代手游可谓家常便饭，妥善使用Light Probes也能达到不俗的效果。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　以上只是本人粗略的实验与记录，实际上光照的内容浩如烟海，远非本篇所能涵盖。在光照方面本人也只能算是初学者，有所不对还请海涵，并欢迎指教。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2019/12/31/summary_2019/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1867,186 +2062,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/12/02/tps_sync/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Musoucrow">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Musoucrow' BLOG">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/12/02/tps_sync/" itemprop="url">
-                  TPS游戏网络同步总结
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-02T21:45:51+08:00">
-                2018-12-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Development/" itemprop="url" rel="index">
-                    <span itemprop="name">Development</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/12/02/tps_sync/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/12/02/tps_sync/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/12/02/tps_sync/" class="leancloud_visitors" data-flag-title="TPS游戏网络同步总结">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors </span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　因友人的项目要做TPS联机对战游戏，本人遂对此进行了一番研究，经过四回的辗转反侧，<a href="https://github.com/MusouCrow/TPSDemo.git" target="_blank" rel="external">Demo</a>总算是做出来了。本次Demo是C/S一体化的设计，即服务端也是Unity做的（可选择1P兼任服务器或者将Unity以命令行模式运行于服务器）。网络模块采用了UDP+KCP，即先前<a href="https://github.com/MusouCrow/BrickAndBall.git" target="_blank" rel="external">BNB</a>的强化版，而之所以没用UNet是因为之前搞出了乌龙所以换了现在这套，但序列化部分还是用的UNet。以上只是背景交代，本文仅聚焦于网络同步方面的细节。</p>
-<h2 id="实现思想"><a href="#实现思想" class="headerlink" title="实现思想"></a>实现思想</h2><p>　　如果你对这方面有所涉猎，想必大致了解何为<strong>状态同步</strong>。市面上的大多文章将其与帧锁定同步对立而论，但本人认为两者并非是对立的存在，关于这点<a href="https://zhuanlan.zhihu.com/p/32843758" target="_blank" rel="external">这篇文章</a>讲的非常清楚，希望读者不要拘泥于形式。在阐述详细的实现思想之前，我们先来看看FPS/TPS游戏的需求：</p>
-<ul>
-<li>非常迅速的操作反馈（若采用服务器应答后方有反馈的设计，很难达到要求，尤其是操作镜头） → <strong>本地先行</strong></li>
-<li>个人体验第一（对于是否命中敌人与被命中不是很敏感） → <strong>玩家之间看到画面情况不一致</strong></li>
-<li>ACT元素低（不存在ACT游戏的打击控制链，不需要帧判定） → <strong>不需要精确到帧的同步</strong></li>
-<li>服务器权威（命中判定由服务器决定） → <strong>服务端模拟游戏世界、同步验证</strong></li>
-<li>房间战斗（玩家人数不多） → <strong>与MMORPG同步不同</strong></li>
-<li>相对同步（玩家之间的时间差不可拉得太大） → <strong>追赶进度</strong></li>
-</ul>
-<p>　　Well done，由以上几点需求已经得出了TPS游戏同步的实现思想，下文将根据实现思想阐述具体实现细节。</p>
-<h2 id="快照"><a href="#快照" class="headerlink" title="快照"></a>快照</h2><p>　　在探究同步流程之前，首先要了解同步的核心：快照。换言之，也就是我们所同步的内容。快照（Snapshot）通俗来讲就是玩家的操作指令与相关数据的集合，由于需要做<strong>同步验证</strong>，所以将数据分为必要数据(Must)与验证数据(Check)，先来看看移动的快照数据结构吧:<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Actor/Common.cs</span></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Move</span> &#123;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">string</span> fd; <span class="comment">// Address:Port(Must)</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> frame; <span class="comment">// Game Frame(Must)</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">bool</span> fromServer; <span class="comment">// It is from server, or client?(Must)</span></div><div class="line">    <span class="keyword">public</span> Vector3 velocity; <span class="comment">// Moving Velocity(Must)</span></div><div class="line">    <span class="keyword">public</span> Vector3 position; <span class="comment">// Position before moving(Check)</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>　　如上文所示，<code>position</code>为移动前的坐标，像这类数据客户端是不需要上传的，仅用于与服务端传来的快照作对比，以进行同步验证。</p>
-<h2 id="同步流程"><a href="#同步流程" class="headerlink" title="同步流程"></a>同步流程</h2><p>　　由于<strong>服务端模拟游戏世界</strong>，所以采用了C/S一体化的设计。在代码层面上则是分为<code>ServerMgr</code>与<code>ClientMgr</code>两个<code>MonoBehaviour</code>，ServerMgr负责收集客户端的快照并整合下发，而ClientMgr负责发送快照与模拟来自服务端的快照以驱动同步单位的运行。如下图所示:<br><img src="https://musoucrow.github.io/images/tps_sync/flow.png" alt="flow"><br>　　图中所说的<em>同步快照</em>，是一种特殊的快照列表，它由服务端每帧打包，包括了多个客户端的一帧快照，客户端模拟它们即可驱动其他客户端代表的对象。采用这种同步流程只能保证在<strong>客户端是同一帧生成的快照，在服务端也会打包到同一个同步快照里</strong>。除此之外都不会保证（不会考虑到快照之间的帧间隔执行情况），即<strong>不需要精确到帧的同步</strong>。</p>
-<h2 id="追赶进度"><a href="#追赶进度" class="headerlink" title="追赶进度"></a>追赶进度</h2><p>　　在正常的同步过程中情况总是理想的，但是一旦出现网络延迟或卡住的话，在恢复之时便会面临大量的快照，那么按照现有的做法便会导致与其他玩家的时间轴拉得太远（看到的画面是很久以前的了），这便需要设计<strong>追赶进度</strong>的机制。需要注意的是，追赶进度是服务端与客户端都需要的（服务器也有网络延迟和卡住的可能），客户端的追赶处理相当简单，同步快照超过一个数量则循环模拟:<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ClientMgr.cs</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> (<span class="keyword">this</span>.syncList.Count &gt; <span class="number">0</span>) &#123;</div><div class="line">    <span class="keyword">this</span>.Simulate();</div><div class="line">    </div><div class="line">    <span class="comment">// SYNCMAX = 15</span></div><div class="line">    <span class="keyword">while</span>(<span class="keyword">this</span>.syncList.Count &gt; SYNCMAX) &#123;</div><div class="line">        <span class="keyword">this</span>.Simulate();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>　　服务端方面则较为复杂，简而言之就是要知道每个客户端快照列表有<em>多少帧</em>（如4个快照，帧号分别为1, 2, 2, 3，则为3帧），当某个每个客户端快照的帧数过高，则循环打包到同步快照列表:<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ServerMgr.cs</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> list = <span class="keyword">new</span> List&lt;Snapshot&gt;(); <span class="comment">// sync-snapshot</span></div><div class="line"></div><div class="line"><span class="comment">// Foreach all clients.</span></div><div class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> i <span class="keyword">in</span> <span class="keyword">this</span>.unitMap) &#123;</div><div class="line">    <span class="keyword">int</span> frame = <span class="number">-1</span>;</div><div class="line">    <span class="keyword">var</span> sl = i.Value.list;</div><div class="line"></div><div class="line">    <span class="comment">// INTERVAL = 10, i.Value.count that is count of frame.</span></div><div class="line">    <span class="keyword">while</span> (sl.Count &gt; <span class="number">0</span> &amp;&amp; (i.Value.count &gt; INTERVAL || (frame == <span class="number">-1</span> || sl[<span class="number">0</span>].frame == frame))) &#123;</div><div class="line">        <span class="keyword">var</span> s = sl[<span class="number">0</span>];</div><div class="line">        list.Add(s);</div><div class="line">        sl.RemoveAt(<span class="number">0</span>);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (frame != s.frame) &#123;</div><div class="line">            frame = s.frame;</div><div class="line">            i.Value.count--;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="本地先行"><a href="#本地先行" class="headerlink" title="本地先行"></a>本地先行</h2><p>　　本地先行可谓这类同步最玄学之处，不过只要了解其原理倒也无甚。需要本地先行的理由在上文已经阐述，由于是以服务端权威且不那么介意判定的问题，所以是可以允许玩家之间看到画面情况不一致这种情况的。况且在大多数场合下，玩家先行并不会造成什么问题（最终的结果趋于一致），但假设在这么一个场合下：<em>玩家A一直行走，在玩家B的视角里对玩家A进行了眩晕</em>。如此便会造成不同步了，所以需要进行<strong>同步验证</strong>以将问题修正。<br>　　要实现同步验证的思路倒也朴素:就是用一个验证列表将快照保存，当收到同步快照列表时就进行逐个对照（对比它们的验证数据，见前文），一旦发现不一致之处，就以当前位置开始，循环模拟同步快照，然后再继续循环模拟验证列表里进度比目前快的快照，追上最新进度:<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ClientMgr.cs</span></div><div class="line"></div><div class="line"><span class="comment">// Compare sync list and check list.</span></div><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; list.Count; i++) &#123;</div><div class="line">    <span class="keyword">if</span> (!list[i].Equals(<span class="keyword">this</span>.checkList[i])) &#123;</div><div class="line">        index = i;</div><div class="line">        print(i);</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (index == list.Count) &#123; <span class="comment">// Agreement</span></div><div class="line">    <span class="keyword">this</span>.checkList.RemoveRange(<span class="number">0</span>, list.Count);</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> &#123; <span class="comment">// Need to fix.</span></div><div class="line">    <span class="keyword">var</span> frame = list[list.Count - <span class="number">1</span>].frame;</div><div class="line"></div><div class="line">    <span class="comment">// Remove useless snapshots.</span></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="keyword">this</span>.checkList.Count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.checkList[i].frame &lt;= frame) &#123;</div><div class="line">            <span class="keyword">this</span>.checkList.RemoveAt(i);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Loop simulate.</span></div><div class="line">    ClientMgr.Resolve(<span class="keyword">this</span>.fd, list, index);</div><div class="line">    ClientMgr.Resolve(<span class="keyword">this</span>.fd, <span class="keyword">this</span>.checkList, <span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="服务端权威"><a href="#服务端权威" class="headerlink" title="服务端权威"></a>服务端权威</h2><p>　　从上文可以看出，本地先行会修正的范围只有本地玩家而已，回到之前的例子:<em>在玩家B的视角里对玩家A进行了眩晕</em>，假设这个行为在服务端上并没有达成（玩家A闪现走了），那么该如何修正呢？很显然可以选择搞个更大的修正系统，但我认为这样并不符合业界的常规做法，所以我给出的答案是: 眩晕行为需要在服务端触发了，然后由服务端将其作为快照，以正常同步的形式在诸客户端上展示。事实上在网络正常的情况下，这样的间隔最多也只是0.1x秒左右而已，完全可以接受。当然这么做对于玩家B而言肯定会发生修正（眩晕按理来说是之前的事了），所以我对此作了个措施: 为快照设计了<code>fromServer</code>属性，一旦是<code>fromServer = true</code>且属于本地玩家的快照，本地玩家会直接模拟而不会将其进行修正对比。这也可以看出这套同步的一个规则:<strong>会影响他人的操作，都需要由服务端发起</strong>。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　很显然，目前这个demo仍很不成熟，不少地方在业界应该会有更好的处理，如CS的射击纠正（服务端根据客户端的射击时间回滚之前的场景进行判定）。如此只能算是一个雏形，还是缺少实战项目的淬炼，先根据接下来的项目看看效果吧。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2096,7 +2111,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">47</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
