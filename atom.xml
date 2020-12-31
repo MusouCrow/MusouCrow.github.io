@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://musoucrow.github.io/"/>
-  <updated>2020-12-13T18:41:31.166Z</updated>
+  <updated>2020-12-31T14:24:29.061Z</updated>
   <id>https://musoucrow.github.io/</id>
   
   <author>
@@ -14,6 +14,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>2020年度总结</title>
+    <link href="https://musoucrow.github.io/2020/12/31/summary_2020/"/>
+    <id>https://musoucrow.github.io/2020/12/31/summary_2020/</id>
+    <published>2020-12-31T14:24:46.000Z</published>
+    <updated>2020-12-31T14:24:29.061Z</updated>
+    
+    <content type="html"><![CDATA[<p>　　又到了写年度总结的日子了，蓦然回首，发现这已经是写Blog的<strong>第四年</strong>了。较之去年，今年可谓相当高产了：<strong>12个月里产出11篇</strong>，四舍五入就是月刊了（笑。可见今年相当充实，每个月都整了新活。工作方面也已过一年，特作总结，以为归纳。<br>　　今年内容输出上最大的变化就是吹响了<strong>进军3D</strong>的号角，以完成一款<strong>俯视角3D ARPG</strong> Demo为目标，对各项技术专题展开了研究。特别在图形效果方面，由于现实的需要，已经到了不得不掌握的时候。结果没想到学习起来相当顺利，以前一直觊觎而不得的知识在现实需求的推进下顺利掌握，果然还是得<strong>知行合一</strong>呀。<br>　　当然能够如此顺利，个人想来也与前些年对这块一直觊觎的成果吧。毕竟概念的东西还是翻来覆去看过不少，只欠一次实践的机会罢了。现在想来也是颇为后悔，若是当年抽出点时间写写渲染器啥的那就更好了。不过也只是想想而已，没有明确的需求与觉悟下，只凭<strong>一时兴起</strong>是难以坚持下去的，只能把目光放在未来了。<br>　　接触这块对我来说算是进入一个新的领域，也因此有幸结识了不少朋友。通过相互交流学到了不少，增长颇多见闻。也因此让我正视以<strong>技术美术</strong>作为职业的可能性，目前按个人标准看来还是不行的：效果实践的广度仍是不足，对于DCC软件的掌握、美术工作的流程与体验还不够深刻，对渲染管线、图形原理的认识与实践也不够。总体而言感觉只是初中级水平，还有很长的路要走。<br>　　世人常言TA分程序向与美术向，尽管我并不是很认可：我认为懂美术的TA才是真的TA，而所谓程序向TA只是<strong>人才不足的权宜之计</strong>，或者是<strong>图形程序</strong>的过渡罢了。而我确实没有动力与天分去成为美术，可见若是要继续往这条路走下去的话，就得靠拢图形程序了吧。当然从现状而论，作为<strong>Gameplay程序兼职TA与策划</strong>也许是个不错的组合拳，这也算是独立制作出身的优势了吧（笑<br>　　照目前来看的话，下一年Demo的重心将会<strong>回归Gameplay</strong>，文章产出应该会少很多吧（Gameplay的东西没有经过时间的验证就没有说服力）。当然TA这块也会继续走下去，还是挺有意思的，希望能有更多结合实际的机会吧。<br>　　至于工作相关的内容限于篇幅与细节便在此略过不谈，以上便是本人的2020年度总结了，且待明年的Blog吧。<br>　　无双草泥马<br>　　2020.12.31</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;　　又到了写年度总结的日子了，蓦然回首，发现这已经是写Blog的&lt;strong&gt;第四年&lt;/strong&gt;了。较之去年，今年可谓相当高产了：&lt;strong&gt;12个月里产出11篇&lt;/strong&gt;，四舍五入就是月刊了（笑。可见今年相当充实，每个月都整了新活。工作方面也已过一年，
+    
+    </summary>
+    
+      <category term="Talk" scheme="https://musoucrow.github.io/categories/Talk/"/>
+    
+    
+      <category term="Talk" scheme="https://musoucrow.github.io/tags/Talk/"/>
+    
+  </entry>
   
   <entry>
     <title>地形系统挣扎录——从Blender到Unity</title>
@@ -842,50 +865,6 @@
     
     
       <category term="Talk" scheme="https://musoucrow.github.io/tags/Talk/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>《DFQ》开发随录——ECS</title>
-    <link href="https://musoucrow.github.io/2018/12/27/dfq_ecs/"/>
-    <id>https://musoucrow.github.io/2018/12/27/dfq_ecs/</id>
-    <published>2018-12-26T16:56:09.000Z</published>
-    <updated>2020-05-10T14:06:52.489Z</updated>
-    
-    <content type="html"><![CDATA[<p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　在阅读本文之前，你需要了解一下何为<a href="https://en.wikipedia.org/wiki/Entity–component–system" target="_blank" rel="external">ECS框架</a>，今年年初本人也对此进行了<a href="https://musoucrow.github.io/2018/03/19/ecs_first/">相关研究</a>。到了实际开发时发现确实有此需求，遂应用之。本文便记录其中心得。</p>
-<h2 id="ECS的意义"><a href="#ECS的意义" class="headerlink" title="ECS的意义"></a>ECS的意义</h2><p>　　在讨论实现细节之前，首先要弄明白一个关键问题：<strong>为何要用ECS？</strong> 对于我而言，使用ECS的意义在于使用传统OOP方式构造一个<strong>高度复杂的对象集</strong>时异常困难。在我看来，高度复杂的对象集即「多衍生物、衍生物之间多多少少拥有些共性」的存在。游戏中于地图上活跃的对象便是如此，拥有多种形式（物体、特效、子弹、NPC、怪物……），而这些衍生物之间多多少少会拥有一些共性（怪物和NPC都要寻路），如何组织安排好这些功能是很麻烦的一件事。在以往的开发生涯中，这部分我重构过很多遍，尝试过各种形式（将通用的功能做成子对象之类的），最终发现：<strong>ECS便是解决此问题的绝佳利器</strong>。</p>
-<h2 id="实现要素"><a href="#实现要素" class="headerlink" title="实现要素"></a>实现要素</h2><p><img src="https://musoucrow.github.io/images/dfq_ecs/relationship.png" alt="relationship"></p>
-<p>　　上图便是本项目ECS框架的结构了，大致介绍一二：</p>
-<ul>
-<li>Entity（实体）: Entity是对象的主体，Component的容器，在数据结构的形式上就是个哈希表。</li>
-<li>Component（组件）: Component是数据的容器，与Data对接，提取相关数据。Component的形式多样，如Transform、Aspect、Input等。Component只有构造函数。</li>
-<li>Data（数据）: 来自配置文件，其中定义了各Component的配置所需。可由Manager将Data作为参数创建Entity。</li>
-<li>Group（群组）: Group以Component作为条件筛选出合适的Entity集合，如此便可使符合条件的Entity运作相应的业务。</li>
-<li>System（系统）: 业务运作的主体，以Group进行筛选出合适的Entity以执行相应的业务。分为<code>Enter, Init, Exit, Update, LateUpdate, Draw</code>六个业务函数。System的形式多样，如Drawing、Life、Battle等。</li>
-<li>Lib（库）: 存放通用业务函数之处，原则上以具体所需Component为参数，而非Entity，如<code>Hitstop(attacker, identity, time)</code>。如此是为明确函数调用条件，以及可以使Component分别来自不同Entity，实现一些特殊需求。Lib的形式多样，如AI、Battle、Effect等。</li>
-<li>Manager（中枢）: 负责Group与Entity的管理，如<code>AddComponent, DelComponent, NewGroup, NewEntity</code>等。</li>
-<li>Executor（执行）: 整套系统的执行者，负责导入System，定义System的执行顺序以及提供System的执行场所。</li>
-</ul>
-<h2 id="使用演示"><a href="#使用演示" class="headerlink" title="使用演示"></a>使用演示</h2><p>　　以上便是ECS框架的组成元素了，接下来展示一下使用场景：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- attributes.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> _ATTRIBUTE = <span class="built_in">require</span>(<span class="string">"actor.lib.attribute"</span>) <span class="comment">-- Lib</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> _Timer = <span class="built_in">require</span>(<span class="string">"util.gear.timer"</span>)</div><div class="line"><span class="keyword">local</span> _Base = <span class="built_in">require</span>(<span class="string">"actor.system.base"</span>)</div><div class="line"></div><div class="line"><span class="keyword">local</span> _Attributes = <span class="built_in">require</span>(<span class="string">"core.class"</span>)(_Base) <span class="comment">-- System</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> _Attributes:Ctor<span class="params">(upperEvent)</span></span></div><div class="line">    <span class="comment">-- Filter</span></div><div class="line">    _Base.Ctor(self, upperEvent, &#123;</div><div class="line">        battle = <span class="keyword">true</span>,</div><div class="line">        attributes = <span class="keyword">true</span></div><div class="line">    &#125;)</div><div class="line"></div><div class="line">    self._timer = _Timer.New(<span class="number">1000</span>)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> _Attributes:Update<span class="params">(dt)</span></span></div><div class="line">    self._timer:Update(dt)</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (<span class="keyword">not</span> self._timer.isRunning) <span class="keyword">then</span></div><div class="line">        <span class="comment">-- List is from group.</span></div><div class="line">        <span class="keyword">for</span> n=<span class="number">1</span>, self._list:GetLength() <span class="keyword">do</span></div><div class="line">            <span class="keyword">local</span> e = self._list:Get(n) <span class="comment">-- Entity</span></div><div class="line">            <span class="comment">-- Component of Battle</span></div><div class="line">            <span class="keyword">if</span> ((e.battle <span class="keyword">and</span> <span class="keyword">not</span> e.battle.isDead) <span class="keyword">or</span> <span class="keyword">not</span> e.battle) <span class="keyword">then</span></div><div class="line">                <span class="keyword">local</span> attributes = e.attributes <span class="comment">-- Component of Attributes</span></div><div class="line">                _ATTRIBUTE.AddHp(attributes, attributes.hpRecovery)</div><div class="line">                _ATTRIBUTE.AddMp(attributes, attributes.mpRecovery)</div><div class="line">            <span class="keyword">end</span></div><div class="line">        <span class="keyword">end</span></div><div class="line"></div><div class="line">        self._timer:Enter()</div><div class="line">    <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> _Attributes</div></pre></td></tr></table></figure></p>
-<p>　　可以看到，这是属性相关的System，它提供了每秒回复HP与MP的业务。拥有Battle与Attributes组件的Entity方可执行，并且了ATTRIBUTE这个Lib的函数。采用这种形式只需要将业务分割为一个个System，以不同的Component组成游戏对象即可达到极高的灵活度。对于高度复杂的对象集而言可谓绝佳的解决方案。</p>
-<h2 id="子对象问题"><a href="#子对象问题" class="headerlink" title="子对象问题"></a>子对象问题</h2><p>　　在开发的过程中，总会遇到诸如状态、技能、BUFF之类需要以子对象形式存在的情况。为此应当如何实现是ECS框架绕不开的一个问题。我曾尝试为他们也纳入至ECS框架中，但是这样会使得System的数量膨胀，而且并没有带来什么明显的好处（它们的独立性很高）。也曾试过为它们弄二级ECS框架，但感觉很刻意死板。最终领悟到了一点：<strong>ECS框架对我而言的意义，只是降低构建对象的复杂度，若是对象本身的复杂度并不高，采用OOP的方式完全可以接受</strong>。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　ECS框架我只用在了地图对象，其余部分（如UI）等都是采用传统的面向对象形式，因为他们的构成复杂度并不高，切忌犯了“为用而用”的错误。当然对于Unity那边而言，ECS的意义在于达到高性能（内存连续、非GC、高Cache命中率、多线程），这时候为了高性能是不得不用了。当然Unity的ECS框架我所涉猎并不多，有待后日挖掘。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;　　&lt;strong&gt;欢迎参与讨论，转载请注明出处。&lt;/strong&gt;      &lt;/p&gt;
-&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;　　在阅读本文之前，你需要了解一下何为&lt;a 
-    
-    </summary>
-    
-      <category term="Development" scheme="https://musoucrow.github.io/categories/Development/"/>
-    
-    
-      <category term="Development" scheme="https://musoucrow.github.io/tags/Development/"/>
-    
-      <category term="DFQ" scheme="https://musoucrow.github.io/tags/DFQ/"/>
     
   </entry>
   

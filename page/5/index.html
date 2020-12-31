@@ -291,6 +291,180 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2017/06/16/mvc_thinking/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/06/16/mvc_thinking/" itemprop="url">
+                  关于MVC框架的一点体悟
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-16T15:29:44+08:00">
+                2017-06-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ProgramDesign/" itemprop="url" rel="index">
+                    <span itemprop="name">ProgramDesign</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/06/16/mvc_thinking/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/06/16/mvc_thinking/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/06/16/mvc_thinking/" class="leancloud_visitors" data-flag-title="关于MVC框架的一点体悟">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　<a href="http://baike.baidu.com/link?url=zYMmkOVIZhbMUbKeHEMyR3Ceg7j_KED4dv0puXavoS2QEVLUO-nmmpcadj1YtyOnnxQca5kxrX9t-v5UKZqoE0dkPehKNji5A5MzLJdQwbTm00psL_0txg8xMNWu0d9WEa896dz92JY-Kitfd5L3D_" target="_blank" rel="external">MVC框架</a>相信大家都有所耳闻，不过想必没有深入接触的话，大多是知其然而不知其所以然。而本人几乎没有GUI软件的开发经验，只是走马观花般的碰过几下.NET的Winform之类，所以之前自然也是如此。<br>　　而近日帮助友人使用C++/CLI完成一款篮球比赛记录软件，在思考要如何搭建架构时很自然的选择了将核心和界面分离的设计，在完成后我感觉Winform把自动生成的代码和人为实现的事件接口放一起很是冗杂。于是选择用Python重新实现一次，随着把界面数据和事件接口的分离，赫然发现：这不就是传说中的MVC框架么？<img src="https://musoucrow.github.io/images/mvc_thinking/directory.png" alt="directory"></p>
+<h2 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h2><p>　　当然有一点是需要明确的：我实现的这套「MVC框架」并不算标准，并且为了便利性还牺牲了一点解耦性，以下仅供参考。<br>　　<img src="https://musoucrow.github.io/images/mvc_thinking/relationship.png" alt="relationship"><br>　　以上的core, interface, design分别是三个模块，代表着MVC框架下的model, controller, view。箭头表明了引用关系（例：interface调用了core的功能）。<br>　　如图所示，interface和design都引用了core，而core并没有引用其他模块。由此可见，core是完全独立于界面的，无论是怎样的界面，只要对接好core就没有问题，这正是「业务和界面分离」。<br>　　而interface和design，实际上是可以解耦的。不过这需要令design使用一些手段监听core的数据是否发生了变化，我认为这样的实现颇为复杂，况且interface和design本为一一对应的关系（interface是界面事件，design是界面数据），所以也不必苛求解耦。遂选择由interface通知design去同步core的数据。  </p>
+<h2 id="演示"><a href="#演示" class="headerlink" title="演示"></a>演示</h2><p>　　本演示使用Python3编写，界面使用了<a href="https://riverbankcomputing.com/software/pyqt/intro" target="_blank" rel="external">Pyqt5</a>，理解这个演示你需要了解<a href="https://www.python.org" target="_blank" rel="external">Python</a>以及<a href="https://www.qt.io" target="_blank" rel="external">Qt</a>。项目地址:<a href="https://git.coding.net/musoucrow/MVCShow.git" target="_blank" rel="external">MVCShow.git</a><br>　　演示的内容十分简单，仅是一个窗口包含了一个文本框和按钮而已。通过点击按钮来改变文本框的内容。  </p>
+<ul>
+<li>点击前：<img src="https://musoucrow.github.io/images/mvc_thinking/before.png" alt="before"></li>
+<li>点击后：<img src="https://musoucrow.github.io/images/mvc_thinking/after.png" alt="after"></li>
+<li>流程图：<img src="https://musoucrow.github.io/images/mvc_thinking/progress.png" alt="progress"></li>
+<li>代码展示：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># core</span></div><div class="line"></div><div class="line">__value = <span class="string">"123"</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_value</span><span class="params">(value)</span>:</span></div><div class="line">    <span class="keyword">global</span> __value</div><div class="line">    __value = value</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_value</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> __value</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># design</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> core</div><div class="line"><span class="keyword">from</span> PyQt5 <span class="keyword">import</span> QtCore, QtWidgets</div><div class="line"><span class="keyword">from</span> PyQt5.QtWidgets <span class="keyword">import</span> QMainWindow</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">EntryDesign</span><span class="params">(QMainWindow)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        super(EntryDesign, self).__init__()</div><div class="line"></div><div class="line">        self.setObjectName(<span class="string">"MVCShow"</span>)</div><div class="line">        self.resize(<span class="number">400</span>, <span class="number">300</span>)</div><div class="line">        self.pushButton = QtWidgets.QPushButton(self)</div><div class="line">        self.pushButton.setGeometry(QtCore.QRect(<span class="number">150</span>, <span class="number">210</span>, <span class="number">113</span>, <span class="number">32</span>))</div><div class="line">        self.pushButton.setObjectName(<span class="string">"pushButton"</span>)</div><div class="line">        self.lineEdit = QtWidgets.QLineEdit(self)</div><div class="line">        self.lineEdit.setGeometry(QtCore.QRect(<span class="number">150</span>, <span class="number">110</span>, <span class="number">113</span>, <span class="number">21</span>))</div><div class="line">        self.lineEdit.setObjectName(<span class="string">"lineEdit"</span>)</div><div class="line"></div><div class="line">        self.retranslateUi()</div><div class="line">        QtCore.QMetaObject.connectSlotsByName(self)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">retranslateUi</span><span class="params">(self)</span>:</span></div><div class="line">        _translate = QtCore.QCoreApplication.translate</div><div class="line">        self.setWindowTitle(_translate(<span class="string">"MVCShow"</span>, <span class="string">"MVCShow"</span>))</div><div class="line">        self.pushButton.setText(_translate(<span class="string">"MVCShow"</span>, <span class="string">"click"</span>))</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">refresh</span><span class="params">(self)</span>:</span></div><div class="line">        self.lineEdit.setText(core.get_value())</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># interface</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> core</div><div class="line"><span class="keyword">from</span> design.entry <span class="keyword">import</span> EntryDesign</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Entry</span><span class="params">(EntryDesign)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, )</span>:</span></div><div class="line">        super(Entry, self).__init__()</div><div class="line">        self.pushButton.clicked.connect(self.__pushButton_clicked)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">showEvent</span><span class="params">(self, event)</span>:</span></div><div class="line">        self.refresh()</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__pushButton_clicked</span><span class="params">(self)</span>:</span></div><div class="line">        core.set_value(<span class="string">"456"</span>)</div><div class="line">        self.refresh()</div></pre></td></tr></table></figure>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　框架是死的，思想是活的。在实际开发中，并不需要教科书般地去套用模板，事实上大家实现的MVC框架也不尽相同。而我认为MVC框架的核心思想便是「界面与业务分离，数据与逻辑分离」。只要把握好这个核心思想去做即可。对此有所心得者，欢迎前来探讨，提供更佳的思路。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2017/05/01/png_stroke_problem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1875,7 +2049,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">47</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

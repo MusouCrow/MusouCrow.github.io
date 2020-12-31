@@ -4,6 +4,26 @@
 
     
   <url>
+    <loc>https://musoucrow.github.io/2020/12/31/summary_2020/</loc>
+    <lastmod>2020-12-31T14:24:29.061Z</lastmod>
+    <data>
+        <display>
+        <title>2020年度总结</title>
+        <pubTime>2020-12-31T14:24:46.000Z</pubTime>
+        
+        <tag>Talk</tag>
+         
+         
+           
+             
+              <breadCrumb title="Talk" url="https://musoucrow.github.io/categories/Talk/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://musoucrow.github.io/2020/12/14/llbn_terrain/</loc>
     <lastmod>2020-12-13T18:41:31.166Z</lastmod>
     <data>
@@ -167,26 +187,6 @@
     
     
   <url>
-    <loc>https://musoucrow.github.io/2017/12/31/summary_2017/</loc>
-    <lastmod>2020-05-10T14:06:52.492Z</lastmod>
-    <data>
-        <display>
-        <title>2017年度总结</title>
-        <pubTime>2017-12-31T09:48:33.000Z</pubTime>
-        
-        <tag>Talk</tag>
-         
-         
-           
-             
-              <breadCrumb title="Talk" url="https://musoucrow.github.io/categories/Talk/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://musoucrow.github.io/2020/04/07/snake_cpp/</loc>
     <lastmod>2020-05-10T14:06:52.492Z</lastmod>
     <data>
@@ -200,28 +200,6 @@
            
              
               <breadCrumb title="Teach" url="https://musoucrow.github.io/categories/Teach/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://musoucrow.github.io/2017/07/16/socket_listen/</loc>
-    <lastmod>2020-05-10T14:06:52.492Z</lastmod>
-    <data>
-        <display>
-        <title>关于Socket.listen方法的一点体悟</title>
-        <pubTime>2017-07-16T03:58:36.000Z</pubTime>
-        
-        <tag>Network</tag>
-         
-        <tag>Socket</tag>
-         
-         
-           
-             
-              <breadCrumb title="Network" url="https://musoucrow.github.io/categories/Network/"/>
           
         </display>
     </data>
@@ -251,12 +229,34 @@
 
     
   <url>
-    <loc>https://musoucrow.github.io/2018/12/31/summary_2018/</loc>
+    <loc>https://musoucrow.github.io/2017/07/16/socket_listen/</loc>
     <lastmod>2020-05-10T14:06:52.492Z</lastmod>
     <data>
         <display>
-        <title>2018年度总结</title>
-        <pubTime>2018-12-31T14:04:28.000Z</pubTime>
+        <title>关于Socket.listen方法的一点体悟</title>
+        <pubTime>2017-07-16T03:58:36.000Z</pubTime>
+        
+        <tag>Network</tag>
+         
+        <tag>Socket</tag>
+         
+         
+           
+             
+              <breadCrumb title="Network" url="https://musoucrow.github.io/categories/Network/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://musoucrow.github.io/2017/12/31/summary_2017/</loc>
+    <lastmod>2020-05-10T14:06:52.492Z</lastmod>
+    <data>
+        <display>
+        <title>2017年度总结</title>
+        <pubTime>2017-12-31T09:48:33.000Z</pubTime>
         
         <tag>Talk</tag>
          
@@ -277,6 +277,26 @@
         <display>
         <title>2019年度总结</title>
         <pubTime>2019-12-31T13:46:33.000Z</pubTime>
+        
+        <tag>Talk</tag>
+         
+         
+           
+             
+              <breadCrumb title="Talk" url="https://musoucrow.github.io/categories/Talk/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://musoucrow.github.io/2018/12/31/summary_2018/</loc>
+    <lastmod>2020-05-10T14:06:52.492Z</lastmod>
+    <data>
+        <display>
+        <title>2018年度总结</title>
+        <pubTime>2018-12-31T14:04:28.000Z</pubTime>
         
         <tag>Talk</tag>
          
@@ -451,28 +471,6 @@
 
     
   <url>
-    <loc>https://musoucrow.github.io/2017/05/01/png_stroke_problem/</loc>
-    <lastmod>2020-05-10T14:06:52.491Z</lastmod>
-    <data>
-        <display>
-        <title>关于像素PNG图片在游戏引擎缩放后出现毛边的解决方案</title>
-        <pubTime>2017-04-30T22:35:55.000Z</pubTime>
-        
-        <tag>GameDesign</tag>
-         
-        <tag>PNG</tag>
-         
-         
-           
-             
-              <breadCrumb title="Teach" url="https://musoucrow.github.io/categories/Teach/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://musoucrow.github.io/2017/06/16/mvc_thinking/</loc>
     <lastmod>2020-05-10T14:06:52.491Z</lastmod>
     <data>
@@ -488,6 +486,28 @@
            
              
               <breadCrumb title="ProgramDesign" url="https://musoucrow.github.io/categories/ProgramDesign/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://musoucrow.github.io/2017/05/01/png_stroke_problem/</loc>
+    <lastmod>2020-05-10T14:06:52.491Z</lastmod>
+    <data>
+        <display>
+        <title>关于像素PNG图片在游戏引擎缩放后出现毛边的解决方案</title>
+        <pubTime>2017-04-30T22:35:55.000Z</pubTime>
+        
+        <tag>GameDesign</tag>
+         
+        <tag>PNG</tag>
+         
+         
+           
+             
+              <breadCrumb title="Teach" url="https://musoucrow.github.io/categories/Teach/"/>
           
         </display>
     </data>
@@ -603,6 +623,28 @@
 
     
   <url>
+    <loc>https://musoucrow.github.io/2018/10/29/dfq_ui/</loc>
+    <lastmod>2020-05-10T14:06:52.490Z</lastmod>
+    <data>
+        <display>
+        <title>《DFQ》开发随录——界面</title>
+        <pubTime>2018-10-29T13:02:54.000Z</pubTime>
+        
+        <tag>Development</tag>
+         
+        <tag>DFQ</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="https://musoucrow.github.io/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://musoucrow.github.io/2018/01/20/dnf_mobile_ex/</loc>
     <lastmod>2020-05-10T14:06:52.490Z</lastmod>
     <data>
@@ -620,28 +662,6 @@
            
              
               <breadCrumb title="Analysis" url="https://musoucrow.github.io/categories/Analysis/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://musoucrow.github.io/2018/10/29/dfq_ui/</loc>
-    <lastmod>2020-05-10T14:06:52.490Z</lastmod>
-    <data>
-        <display>
-        <title>《DFQ》开发随录——界面</title>
-        <pubTime>2018-10-29T13:02:54.000Z</pubTime>
-        
-        <tag>Development</tag>
-         
-        <tag>DFQ</tag>
-         
-         
-           
-             
-              <breadCrumb title="Development" url="https://musoucrow.github.io/categories/Development/"/>
           
         </display>
     </data>
@@ -737,6 +757,50 @@
 
     
   <url>
+    <loc>https://musoucrow.github.io/2017/12/07/dfq_building/</loc>
+    <lastmod>2020-05-10T14:06:52.489Z</lastmod>
+    <data>
+        <display>
+        <title>游戏测试同步于Android设备的解决方案</title>
+        <pubTime>2017-12-06T21:33:42.000Z</pubTime>
+        
+        <tag>Git</tag>
+         
+        <tag>Python</tag>
+         
+         
+           
+             
+              <breadCrumb title="Teach" url="https://musoucrow.github.io/categories/Teach/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://musoucrow.github.io/2018/12/27/dfq_ecs/</loc>
+    <lastmod>2020-05-10T14:06:52.489Z</lastmod>
+    <data>
+        <display>
+        <title>《DFQ》开发随录——ECS</title>
+        <pubTime>2018-12-26T16:56:09.000Z</pubTime>
+        
+        <tag>Development</tag>
+         
+        <tag>DFQ</tag>
+         
+         
+           
+             
+              <breadCrumb title="Development" url="https://musoucrow.github.io/categories/Development/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://musoucrow.github.io/2019/03/31/dfq_drop/</loc>
     <lastmod>2020-05-10T14:06:52.489Z</lastmod>
     <data>
@@ -774,50 +838,6 @@
            
              
               <breadCrumb title="ProgramDesign" url="https://musoucrow.github.io/categories/ProgramDesign/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://musoucrow.github.io/2018/12/27/dfq_ecs/</loc>
-    <lastmod>2020-05-10T14:06:52.489Z</lastmod>
-    <data>
-        <display>
-        <title>《DFQ》开发随录——ECS</title>
-        <pubTime>2018-12-26T16:56:09.000Z</pubTime>
-        
-        <tag>Development</tag>
-         
-        <tag>DFQ</tag>
-         
-         
-           
-             
-              <breadCrumb title="Development" url="https://musoucrow.github.io/categories/Development/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://musoucrow.github.io/2017/12/07/dfq_building/</loc>
-    <lastmod>2020-05-10T14:06:52.489Z</lastmod>
-    <data>
-        <display>
-        <title>游戏测试同步于Android设备的解决方案</title>
-        <pubTime>2017-12-06T21:33:42.000Z</pubTime>
-        
-        <tag>Git</tag>
-         
-        <tag>Python</tag>
-         
-         
-           
-             
-              <breadCrumb title="Teach" url="https://musoucrow.github.io/categories/Teach/"/>
           
         </display>
     </data>

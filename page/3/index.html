@@ -291,6 +291,185 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/12/27/dfq_ecs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Musoucrow">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Musoucrow' BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/12/27/dfq_ecs/" itemprop="url">
+                  《DFQ》开发随录——ECS
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-27T00:56:09+08:00">
+                2018-12-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Development/" itemprop="url" rel="index">
+                    <span itemprop="name">Development</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/12/27/dfq_ecs/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/12/27/dfq_ecs/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/12/27/dfq_ecs/" class="leancloud_visitors" data-flag-title="《DFQ》开发随录——ECS">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　在阅读本文之前，你需要了解一下何为<a href="https://en.wikipedia.org/wiki/Entity–component–system" target="_blank" rel="external">ECS框架</a>，今年年初本人也对此进行了<a href="https://musoucrow.github.io/2018/03/19/ecs_first/">相关研究</a>。到了实际开发时发现确实有此需求，遂应用之。本文便记录其中心得。</p>
+<h2 id="ECS的意义"><a href="#ECS的意义" class="headerlink" title="ECS的意义"></a>ECS的意义</h2><p>　　在讨论实现细节之前，首先要弄明白一个关键问题：<strong>为何要用ECS？</strong> 对于我而言，使用ECS的意义在于使用传统OOP方式构造一个<strong>高度复杂的对象集</strong>时异常困难。在我看来，高度复杂的对象集即「多衍生物、衍生物之间多多少少拥有些共性」的存在。游戏中于地图上活跃的对象便是如此，拥有多种形式（物体、特效、子弹、NPC、怪物……），而这些衍生物之间多多少少会拥有一些共性（怪物和NPC都要寻路），如何组织安排好这些功能是很麻烦的一件事。在以往的开发生涯中，这部分我重构过很多遍，尝试过各种形式（将通用的功能做成子对象之类的），最终发现：<strong>ECS便是解决此问题的绝佳利器</strong>。</p>
+<h2 id="实现要素"><a href="#实现要素" class="headerlink" title="实现要素"></a>实现要素</h2><p><img src="https://musoucrow.github.io/images/dfq_ecs/relationship.png" alt="relationship"></p>
+<p>　　上图便是本项目ECS框架的结构了，大致介绍一二：</p>
+<ul>
+<li>Entity（实体）: Entity是对象的主体，Component的容器，在数据结构的形式上就是个哈希表。</li>
+<li>Component（组件）: Component是数据的容器，与Data对接，提取相关数据。Component的形式多样，如Transform、Aspect、Input等。Component只有构造函数。</li>
+<li>Data（数据）: 来自配置文件，其中定义了各Component的配置所需。可由Manager将Data作为参数创建Entity。</li>
+<li>Group（群组）: Group以Component作为条件筛选出合适的Entity集合，如此便可使符合条件的Entity运作相应的业务。</li>
+<li>System（系统）: 业务运作的主体，以Group进行筛选出合适的Entity以执行相应的业务。分为<code>Enter, Init, Exit, Update, LateUpdate, Draw</code>六个业务函数。System的形式多样，如Drawing、Life、Battle等。</li>
+<li>Lib（库）: 存放通用业务函数之处，原则上以具体所需Component为参数，而非Entity，如<code>Hitstop(attacker, identity, time)</code>。如此是为明确函数调用条件，以及可以使Component分别来自不同Entity，实现一些特殊需求。Lib的形式多样，如AI、Battle、Effect等。</li>
+<li>Manager（中枢）: 负责Group与Entity的管理，如<code>AddComponent, DelComponent, NewGroup, NewEntity</code>等。</li>
+<li>Executor（执行）: 整套系统的执行者，负责导入System，定义System的执行顺序以及提供System的执行场所。</li>
+</ul>
+<h2 id="使用演示"><a href="#使用演示" class="headerlink" title="使用演示"></a>使用演示</h2><p>　　以上便是ECS框架的组成元素了，接下来展示一下使用场景：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- attributes.lua</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> _ATTRIBUTE = <span class="built_in">require</span>(<span class="string">"actor.lib.attribute"</span>) <span class="comment">-- Lib</span></div><div class="line"></div><div class="line"><span class="keyword">local</span> _Timer = <span class="built_in">require</span>(<span class="string">"util.gear.timer"</span>)</div><div class="line"><span class="keyword">local</span> _Base = <span class="built_in">require</span>(<span class="string">"actor.system.base"</span>)</div><div class="line"></div><div class="line"><span class="keyword">local</span> _Attributes = <span class="built_in">require</span>(<span class="string">"core.class"</span>)(_Base) <span class="comment">-- System</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> _Attributes:Ctor<span class="params">(upperEvent)</span></span></div><div class="line">    <span class="comment">-- Filter</span></div><div class="line">    _Base.Ctor(self, upperEvent, &#123;</div><div class="line">        battle = <span class="keyword">true</span>,</div><div class="line">        attributes = <span class="keyword">true</span></div><div class="line">    &#125;)</div><div class="line"></div><div class="line">    self._timer = _Timer.New(<span class="number">1000</span>)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> _Attributes:Update<span class="params">(dt)</span></span></div><div class="line">    self._timer:Update(dt)</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (<span class="keyword">not</span> self._timer.isRunning) <span class="keyword">then</span></div><div class="line">        <span class="comment">-- List is from group.</span></div><div class="line">        <span class="keyword">for</span> n=<span class="number">1</span>, self._list:GetLength() <span class="keyword">do</span></div><div class="line">            <span class="keyword">local</span> e = self._list:Get(n) <span class="comment">-- Entity</span></div><div class="line">            <span class="comment">-- Component of Battle</span></div><div class="line">            <span class="keyword">if</span> ((e.battle <span class="keyword">and</span> <span class="keyword">not</span> e.battle.isDead) <span class="keyword">or</span> <span class="keyword">not</span> e.battle) <span class="keyword">then</span></div><div class="line">                <span class="keyword">local</span> attributes = e.attributes <span class="comment">-- Component of Attributes</span></div><div class="line">                _ATTRIBUTE.AddHp(attributes, attributes.hpRecovery)</div><div class="line">                _ATTRIBUTE.AddMp(attributes, attributes.mpRecovery)</div><div class="line">            <span class="keyword">end</span></div><div class="line">        <span class="keyword">end</span></div><div class="line"></div><div class="line">        self._timer:Enter()</div><div class="line">    <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"><span class="keyword">return</span> _Attributes</div></pre></td></tr></table></figure></p>
+<p>　　可以看到，这是属性相关的System，它提供了每秒回复HP与MP的业务。拥有Battle与Attributes组件的Entity方可执行，并且了ATTRIBUTE这个Lib的函数。采用这种形式只需要将业务分割为一个个System，以不同的Component组成游戏对象即可达到极高的灵活度。对于高度复杂的对象集而言可谓绝佳的解决方案。</p>
+<h2 id="子对象问题"><a href="#子对象问题" class="headerlink" title="子对象问题"></a>子对象问题</h2><p>　　在开发的过程中，总会遇到诸如状态、技能、BUFF之类需要以子对象形式存在的情况。为此应当如何实现是ECS框架绕不开的一个问题。我曾尝试为他们也纳入至ECS框架中，但是这样会使得System的数量膨胀，而且并没有带来什么明显的好处（它们的独立性很高）。也曾试过为它们弄二级ECS框架，但感觉很刻意死板。最终领悟到了一点：<strong>ECS框架对我而言的意义，只是降低构建对象的复杂度，若是对象本身的复杂度并不高，采用OOP的方式完全可以接受</strong>。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　ECS框架我只用在了地图对象，其余部分（如UI）等都是采用传统的面向对象形式，因为他们的构成复杂度并不高，切忌犯了“为用而用”的错误。当然对于Unity那边而言，ECS的意义在于达到高性能（内存连续、非GC、高Cache命中率、多线程），这时候为了高性能是不得不用了。当然Unity的ECS框架我所涉猎并不多，有待后日挖掘。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/12/02/tps_sync/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1940,178 +2119,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://musoucrow.github.io/2018/03/11/for_loop/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Musoucrow">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Musoucrow' BLOG">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/03/11/for_loop/" itemprop="url">
-                  一次移植代码时关于For循环的发现
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-11T00:51:33+08:00">
-                2018-03-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ProgramDesign/" itemprop="url" rel="index">
-                    <span itemprop="name">ProgramDesign</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/03/11/for_loop/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/03/11/for_loop/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/03/11/for_loop/" class="leancloud_visitors" data-flag-title="一次移植代码时关于For循环的发现">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors </span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>　　<strong>欢迎参与讨论，转载请注明出处。</strong>      </p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　今日使用Python移植一份C++实现的算法发生了效果不一致的问题，经过仔细分析后发现问题竟出自For循环，由此引申此文。</p>
-<h2 id="详情"><a href="#详情" class="headerlink" title="详情"></a>详情</h2><p>　　首先来看看C++的For循环：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</div><div class="line">    <span class="comment">//do something</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>　　然后再来看看根据直觉进行移植的Python代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">i = <span class="number">0</span></div><div class="line"></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">5</span>):</div><div class="line">    <span class="comment"># do something</span></div></pre></td></tr></table></figure>
-<p>　　咋看之下似乎并没有问题，但若是在循环结束后输出i值，其结果竟是不一致的（C++为5，而Python为4）！在大多数情况下，C++的循环变量并不会在外部定义，所以其生存域仅在For循环之中，这种情况下并不会有什么问题。然而一旦如此，便代表i肯定要用于后续了，如此结果相差1便可让整个程序炸掉。<br>　　仔细想来C++和Python的循环实现本就不一致，C++是使用一个逻辑值和两个表达式展开的，而Python则是一个生成器，且Python的生存域向来独树一帜，结果不一致也是理所当然的。可是在凭直觉或未了解过的情况下进行移植时便很容易中招，这便是本文的意义，以示警戒。</p>
-<h2 id="其他语言的For循环"><a href="#其他语言的For循环" class="headerlink" title="其他语言的For循环"></a>其他语言的For循环</h2><p>　　俗话说举一反三，遇到这种问题自然会想到其他编程语言关于For循环的细节，我便选择了我日常使用的Lua和C#做了尝试：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">local</span> n = <span class="number">1</span></div><div class="line"></div><div class="line"><span class="keyword">for</span> n=<span class="number">1</span>, <span class="number">5</span> <span class="keyword">do</span></div><div class="line">	<span class="comment">--do something</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</div><div class="line">    <span class="comment">//do something</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>　　Lua循环完毕后n的值为1，可谓相当遵守生存域了（循环是一个域，与外部变量无关）。而C#则是与C++一致，这也是理所当然的，毕竟以上代码跟C++长得完全一致嘛（估计Java也是如此）。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　仔细想来编程语言之间的循环代码虽然看起来相似，但实际上他们的具体实现乃至表达式都是有所不同的，可见不可想当然，否则就容易遭遇今日这样的问题了。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2161,7 +2168,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">47</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
